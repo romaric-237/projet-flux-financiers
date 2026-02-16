@@ -1,0 +1,44 @@
+# ============================================================================
+# .gitignore - Projet Flux Financiers
+# ============================================================================
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend (Spring Boot / Maven)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/*.iml
+backend/.settings/
+backend/.classpath
+backend/.project
+
+# Frontend (Vue.js / Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.nuxt/
+frontend/.output/
+frontend/.vite/
+frontend/*.log
+
+# Docker
+.env.local
+*.env
+
+# Logs
+*.log
+logs/
+
+# Données temporaires
+tmp/
+temp/

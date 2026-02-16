@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════════════════
+    🚀 GUIDE DE DÉMARRAGE RAPIDE - FLUX FINANCIERS v2.1
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ DÉMARRAGE EN 3 ÉTAPES ✨
+
+1️⃣  Installer Docker Desktop
+    👉 https://www.docker.com/products/docker-desktop/
+    ✅ Inclut Docker + Docker Compose
+
+2️⃣  Ouvrir un terminal dans le dossier projet-flux-financiers/
+
+3️⃣  Exécuter UNE SEULE commande :
+    
+    Sur Linux/Mac :
+    ./start.sh
+    
+    Sur Windows :
+    docker-compose up -d
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ C'EST TOUT ! L'APPLICATION EST LANCÉE !
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📱 ACCÈS AUX SERVICES :
+
+   🌐 Frontend (Interface)  → http://localhost:5173
+   🔧 Backend (API)         → http://localhost:8080/api
+   🗄️  Base de données      → localhost:3307
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔐 CONNEXION :
+
+   Username : admin
+   Password : admin123
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 DONNÉES INITIALES :
+
+   ✅ 1 utilisateur (admin)
+   ✅ 19 charges dans le référentiel :
+      • 11 VEHICULES
+      • 3 INFRASTRUCTURE
+      • 4 FISCALES_SOCIALES
+      • 1 SERVICES_EXTERNES
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🛠️  COMMANDES UTILES :
+
+   Voir les logs en temps réel :
+   docker-compose logs -f
+
+   Arrêter l'application :
+   docker-compose down
+
+   Redémarrer après modification :
+   docker-compose up -d --build
+
+   Voir l'état des services :
+   docker-compose ps
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🐛 PROBLÈMES COURANTS :
+
+   ❌ Port déjà utilisé ?
+      → Changez les ports dans docker-compose.yml
+      
+   ❌ MySQL ne démarre pas ?
+      → Attendez 10-15 secondes et relancez : docker-compose restart backend
+      
+   ❌ Erreur de permissions (Linux/Mac) ?
+      → sudo chown -R $USER:$USER .
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION COMPLÈTE :
+
+   📄 README.md                    → Documentation détaillée
+   📐 docs/Diagramme_Classes*.puml → Modèle UML
+   🗄️  docs/MCD_MLD*.txt           → Modèle de données
+   📋 docs/Resume*.txt             → Résumé des modifications
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎓 PROJET DE STAGE :
+
+   Auteur      : Kenfack Romaric
+   Superviseur : Didier Servaye
+   Période     : Janvier - Mars 2026 (11 semaines)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎉 BON DÉVELOPPEMENT ! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════
