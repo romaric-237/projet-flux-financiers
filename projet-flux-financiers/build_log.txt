@@ -1,0 +1,56 @@
+2026/02/24 02:18:16 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 30B 0.1s
+#1 transferring dockerfile: 810B 0.1s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+#2 ...
+
+#3 [internal] load metadata for docker.io/library/maven:3.9.5-eclipse-temurin-21
+#3 DONE 0.8s
+
+#2 [internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+#2 DONE 0.8s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [build 1/5] FROM docker.io/library/maven:3.9.5-eclipse-temurin-21@sha256:2bbd188fef2384cf93181bb992b75542a2837afdd5c4c2274cebcae71cd05156
+#5 DONE 0.0s
+
+#6 [stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:6ad8ed080d9be96b61438ec3ce99388e294af216ed57356000c06070e85c5d5d
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 6.34kB 0.1s done
+#7 DONE 0.1s
+
+#8 [build 2/5] WORKDIR /app
+#8 CACHED
+
+#9 [build 3/5] COPY pom.xml .
+#9 CACHED
+
+#10 [build 4/5] COPY src ./src
+#10 CACHED
+
+#11 [build 5/5] RUN mvn clean package -DskipTests
+#11 CACHED
+
+#12 [stage-1 2/3] WORKDIR /app
+#12 CACHED
+
+#13 [stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 writing image sha256:99a3707c12df662f3aba116d384790fc60906c5a579a93c8f0f085acf5ab74df 0.0s done
+#14 DONE 0.0s
+
+What's Next?
+  View a summary of image vulnerabilities and recommendations → docker scout quickview
