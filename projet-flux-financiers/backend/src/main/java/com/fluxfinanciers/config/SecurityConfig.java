@@ -1,51 +1,120 @@
 package com.fluxfinanciers.config;
 
+import com.fluxfinanciers.security.JwtAuthenticationFilter;
+import com.fluxfinanciers.security.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/**
- * Configuration minimale de Spring Security
- * Pour l'instant : tout est permis (pas d'authentification requise)
- * Le JWT sera ajouté plus tard
- */
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    /**
-     * Bean PasswordEncoder pour hasher les mots de passe avec BCrypt
-     * Utilisé par UserService pour encoder les mots de passe avant de les sauvegarder
-     */
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsServiceImpl userDetailsService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Configuration minimale : TOUS les endpoints sont accessibles sans authentification
-     * CSRF désactivé (pour faciliter les tests avec Postman)
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    // =========================================================================
+    // CONFIGURATION SÉCURITÉ - CHOISIR UNE SEULE VERSION
+    // =========================================================================
+
+    /*
+     * ────────────────────────────────────────────────────────────────────────
+     * VERSION 1 : POUR LES TESTS (SANS JWT)
+     * ────────────────────────────────────────────────────────────────────────
+     * Utiliser cette version pour :
+     * - Tests Postman sans authentification
+     * - Démo au maître de stage
+     * - Développement rapide
      *
-     * À compléter plus tard avec :
-     * - JWT Authentication Filter
-     * - Gestion des rôles
-     * - Endpoints protégés
+     * Tous les endpoints sont accessibles sans token JWT
+     * ────────────────────────────────────────────────────────────────────────
      */
+
+       /*@Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());  // TOUT AUTORISÉ
+
+        return http.build();
+    }   /*
+
+    /*
+     * ────────────────────────────────────────────────────────────────────────
+     * VERSION 2 : AVEC JWT ACTIVÉ (PRODUCTION)
+     * ────────────────────────────────────────────────────────────────────────
+     * Utiliser cette version pour :
+     * - Tests avec authentification JWT
+     * - Environnement de production
+     * - Sécurité complète
+     *
+     * IMPORTANT : Nécessite un endpoint /api/auth/login pour obtenir le token
+     * Tous les endpoints sauf /api/auth/** nécessitent un token JWT valide
+     * ────────────────────────────────────────────────────────────────────────
+     */
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Désactiver CSRF (pour tester facilement avec Postman/Insomnia)
-                .csrf(csrf -> csrf.disable())
-
-                // Autoriser TOUTES les requêtes sans authentification (temporaire)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()  // Login sans auth
+                .anyRequest().authenticated()                  // Tout le reste protégé
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

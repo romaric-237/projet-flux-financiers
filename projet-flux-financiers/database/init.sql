@@ -11,7 +11,7 @@ USE flux_financiers;
 -- ============================================================================
 
 DROP TABLE IF EXISTS paiement_charge;
-DROP TABLE IF EXISTS paiement_personnel;
+DROP TABLE IF EXISTS paiement_employe;
 DROP TABLE IF EXISTS versement;
 DROP TABLE IF EXISTS charge;
 DROP TABLE IF EXISTS employe;
@@ -54,8 +54,7 @@ CREATE TABLE versement (
   remarque VARCHAR(500),
   CONSTRAINT fk_versement_client FOREIGN KEY (client_id) REFERENCES client(id) ON DELETE RESTRICT,
   INDEX idx_versement_client (client_id),
-  INDEX idx_versement_date (date_versement),
-  CONSTRAINT chk_versement_date CHECK (date_versement <= CURRENT_DATE)
+  INDEX idx_versement_date (date_versement)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table EMPLOYE
@@ -73,7 +72,7 @@ CREATE TABLE employe (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table PAIEMENT_PERSONNEL
-CREATE TABLE paiement_personnel (
+CREATE TABLE paiement_employe (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   employe_id BIGINT NOT NULL,
   type_paiement ENUM('SALAIRE','PRIME') NOT NULL,
@@ -81,11 +80,10 @@ CREATE TABLE paiement_personnel (
   montant DECIMAL(10,2) NOT NULL CHECK (montant > 0),
   date_paiement DATE NOT NULL,
   remarque VARCHAR(500),
-  CONSTRAINT fk_paiement_personnel_employe FOREIGN KEY (employe_id) REFERENCES employe(id) ON DELETE RESTRICT,
-  INDEX idx_paiement_personnel_employe (employe_id),
-  INDEX idx_paiement_personnel_date (date_paiement),
-  INDEX idx_paiement_personnel_type (type_paiement),
-  CONSTRAINT chk_paiement_personnel_date CHECK (date_paiement <= CURRENT_DATE)
+  CONSTRAINT fk_paiement_employe_employe FOREIGN KEY (employe_id) REFERENCES employe(id) ON DELETE RESTRICT,
+  INDEX idx_paiement_employe_employe (employe_id),
+  INDEX idx_paiement_employe_date (date_paiement),
+  INDEX idx_paiement_employe_type (type_paiement)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table CHARGE
@@ -112,8 +110,7 @@ CREATE TABLE paiement_charge (
   remarque VARCHAR(500),
   CONSTRAINT fk_paiement_charge_charge FOREIGN KEY (charge_id) REFERENCES charge(id) ON DELETE RESTRICT,
   INDEX idx_paiement_charge_charge (charge_id),
-  INDEX idx_paiement_charge_date (date_paiement),
-  CONSTRAINT chk_paiement_charge_date CHECK (date_paiement <= CURRENT_DATE)
+  INDEX idx_paiement_charge_date (date_paiement)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
@@ -180,7 +177,7 @@ SELECT
   COUNT(p.id) AS nb_paiements,
   COALESCE(SUM(p.montant), 0) AS total_paiements
 FROM employe e
-LEFT JOIN paiement_personnel p ON e.id = p.employe_id
+LEFT JOIN paiement_employe p ON e.id = p.employe_id
 GROUP BY e.id, e.nom, e.prenom, e.statut;
 
 -- Vue : Synthèse des paiements par charge
@@ -202,10 +199,10 @@ GROUP BY ch.id, ch.nom_charge, ch.type_charge, u.username, ch.created_at;
 CREATE VIEW v_synthese_financiere AS
 SELECT 
   (SELECT COALESCE(SUM(montant_ttc), 0) FROM versement) AS total_recettes,
-  (SELECT COALESCE(SUM(montant), 0) FROM paiement_personnel) AS total_depenses_personnel,
+  (SELECT COALESCE(SUM(montant), 0) FROM paiement_employe) AS total_depenses_personnel,
   (SELECT COALESCE(SUM(montant), 0) FROM paiement_charge) AS total_depenses_charges,
   (SELECT COALESCE(SUM(montant_ttc), 0) FROM versement) - 
-  ((SELECT COALESCE(SUM(montant), 0) FROM paiement_personnel) + 
+  ((SELECT COALESCE(SUM(montant), 0) FROM paiement_employe) + 
    (SELECT COALESCE(SUM(montant), 0) FROM paiement_charge)) AS solde;
 
 -- Vue : Traçabilité des créations

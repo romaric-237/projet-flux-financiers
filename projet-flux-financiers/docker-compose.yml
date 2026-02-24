@@ -51,7 +51,6 @@ services:
     networks:
       - flux-network
     volumes:
-      - ./backend:/app
       - backend_m2:/root/.m2
 
   # ============================================================================
