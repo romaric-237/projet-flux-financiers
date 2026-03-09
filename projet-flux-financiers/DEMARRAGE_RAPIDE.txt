@@ -26,9 +26,9 @@
 
 📱 ACCÈS AUX SERVICES :
 
-   🌐 Frontend (Interface)  → http://localhost:5173
-   🔧 Backend (API)         → http://localhost:8080/api
-   🗄️  Base de données      → localhost:3307
+   Frontend (Interface)  → http://localhost:5173
+    Backend (API)         → http://localhost:8080/api
+    Base de données      → localhost:3307
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -93,9 +93,3 @@
    Auteur      : Kenfack Romaric
    Superviseur : Didier Servaye
    Période     : Janvier - Mars 2026 (11 semaines)
-
-═══════════════════════════════════════════════════════════════════════════════
-
-🎉 BON DÉVELOPPEMENT ! 🚀
-
-═══════════════════════════════════════════════════════════════════════════════

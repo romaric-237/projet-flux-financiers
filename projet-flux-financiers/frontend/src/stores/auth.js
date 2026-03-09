@@ -14,30 +14,23 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   async function login(credentials) {
     try {
-      // TODO: Décommenter quand l'endpoint /auth/login sera créé
-      // const response = await api.post('/auth/login', credentials)
-      // const { token: newToken, user: userData } = response.data
-      
-      // Simulation temporaire (à retirer)
-      const newToken = 'fake-jwt-token-for-testing'
-      const userData = { 
-        id: 1, 
-        username: credentials.username, 
-        role: 'GESTIONNAIRE' 
-      }
-      
+      const response = await api.post('/auth/login', credentials)
+      const { id, token: newToken, username, role } = response.data
+
+      const userData = { id, username, role }
+
       token.value = newToken
       user.value = userData
-      
+
       localStorage.setItem('token', newToken)
       localStorage.setItem('user', JSON.stringify(userData))
-      
+
       return { success: true }
     } catch (error) {
       console.error('Erreur de connexion:', error)
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Erreur de connexion' 
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Identifiants incorrects'
       }
     }
   }

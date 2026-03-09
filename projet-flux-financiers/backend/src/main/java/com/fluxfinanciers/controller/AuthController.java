@@ -2,6 +2,7 @@ package com.fluxfinanciers.controller;
 
 import com.fluxfinanciers.dto.request.LoginRequest;
 import com.fluxfinanciers.dto.response.AuthResponse;
+import com.fluxfinanciers.repository.UserRepository;
 import com.fluxfinanciers.security.JwtService;
 import com.fluxfinanciers.security.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -31,7 +33,10 @@ public class AuthController {
         String token = jwtService.generateToken(userDetails);
 
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        Long userId = userRepository.findByUsername(request.getUsername())
+                .map(com.fluxfinanciers.entity.User::getId)
+                .orElse(null);
 
-        return ResponseEntity.ok(new AuthResponse(token, request.getUsername(), role));
+        return ResponseEntity.ok(new AuthResponse(userId, token, request.getUsername(), role));
     }
 }

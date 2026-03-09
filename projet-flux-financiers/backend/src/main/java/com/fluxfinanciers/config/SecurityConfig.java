@@ -51,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -77,7 +77,7 @@ public class SecurityConfig {
      * ────────────────────────────────────────────────────────────────────────
      */
 
-       /*@Bean
+     /*@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -85,22 +85,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());  // TOUT AUTORISÉ
 
         return http.build();
-    }   /*
-
+    }
+}
     /*
      * ────────────────────────────────────────────────────────────────────────
      * VERSION 2 : AVEC JWT ACTIVÉ (PRODUCTION)
      * ────────────────────────────────────────────────────────────────────────
-     * Utiliser cette version pour :
-     * - Tests avec authentification JWT
-     * - Environnement de production
-     * - Sécurité complète
-     *
-     * IMPORTANT : Nécessite un endpoint /api/auth/login pour obtenir le token
-     * Tous les endpoints sauf /api/auth/** nécessitent un token JWT valide
-     * ────────────────────────────────────────────────────────────────────────
      */
 
+    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -108,13 +101,31 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  // Login sans auth
-                .anyRequest().authenticated()                  // Tout le reste protégé
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+    */
 
+    // VERSION 2 : AVEC JWT (active)
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 }
+
