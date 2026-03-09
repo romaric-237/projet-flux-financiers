@@ -1,52 +1,570 @@
 <template>
-  <div class="container">
-    <h1>📊 Tableau de Bord</h1>
-    <p class="text-muted">Bienvenue {{ authStore.currentUser?.username }} !</p>
-    
-    <div class="card">
-      <h3>✅ Structure de base installée !</h3>
-      <p> </p>
-      
-      <div class="mt-3">
-        <h4>Pages disponibles :</h4>
-        <ul>
-          <li><router-link to="/clients">📋 Clients</router-link></li>
-          <li><router-link to="/employes">👥 Employés</router-link></li>
-          <li><router-link to="/charges">💰 Charges</router-link></li>
-          <li><router-link to="/versements">💵 Versements</router-link></li>
-          <li><router-link to="/paiements-employe">💳 Paiements Employés</router-link></li>
-          <li><router-link to="/paiements-charge">🧾 Paiements Charges</router-link></li>
-          <li><router-link to="/historique">📅 Historique</router-link></li>
-          <li><router-link to="/export">📥 Export Excel</router-link></li>
-        </ul>
+  <div class="dashboard">
+
+    <!-- Bandeau de bienvenue -->
+    <div class="welcome-banner">
+      <div class="welcome-content">
+        <div>
+          <p class="welcome-label">Bonjour,</p>
+          <h1 class="welcome-name">{{ authStore.currentUser?.username }}</h1>
+          <p class="welcome-date">{{ dateAujourdhui }}</p>
+        </div>
+        <div class="welcome-logo">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.15)"/>
+            <path d="M20 44V28l12-8 12 8v16H36v-8h-8v8H20Z" fill="white" opacity="0.9"/>
+            <rect x="28" y="36" width="8" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+          </svg>
+        </div>
       </div>
     </div>
+
+    <!-- Actions rapides -->
+    <h2 class="section-title">Actions rapides</h2>
+    <div class="actions-grid">
+      <router-link to="/versements" class="action-card action-green">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="action-title">Nouveau versement</p>
+          <p class="action-desc">Enregistrer un paiement client</p>
+        </div>
+      </router-link>
+
+      <router-link to="/paiements-charge" class="action-card action-red">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="action-title">Nouveau paiement charge</p>
+          <p class="action-desc">Véhicule, infrastructure, fiscale…</p>
+        </div>
+      </router-link>
+
+      <router-link to="/paiements-employe" class="action-card action-blue">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="action-title">Nouveau paiement personnel</p>
+          <p class="action-desc">Salaire, prime, indemnité…</p>
+        </div>
+      </router-link>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-green">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <p class="kpi-label">Total versements</p>
+          <p class="kpi-value">{{ formatMontant(kpi.totalVersements) }}</p>
+          <p class="kpi-sub">{{ kpi.nbVersements }} transaction(s)</p>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-red">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <p class="kpi-label">Total charges</p>
+          <p class="kpi-value">{{ formatMontant(kpi.totalCharges) }}</p>
+          <p class="kpi-sub">{{ kpi.nbCharges }} paiement(s)</p>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <p class="kpi-label">Total personnel</p>
+          <p class="kpi-value">{{ formatMontant(kpi.totalPersonnel) }}</p>
+          <p class="kpi-sub">{{ kpi.nbPersonnel }} paiement(s)</p>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-orange">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <p class="kpi-label">Clients</p>
+          <p class="kpi-value">{{ kpi.nbClients }}</p>
+          <p class="kpi-sub">clients enregistrés</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="charts-grid">
+      <!-- Donut : répartition des flux -->
+      <div class="card chart-card">
+        <h3 class="chart-title">Répartition des flux</h3>
+        <div class="chart-wrapper">
+          <Doughnut v-if="donutReady" :data="donutData" :options="donutOptions" />
+          <p v-else class="text-muted text-center mt-2">Aucune donnée disponible.</p>
+        </div>
+      </div>
+
+      <!-- Barres : versements mensuels -->
+      <div class="card chart-card">
+        <h3 class="chart-title">Versements — 6 derniers mois</h3>
+        <div class="chart-wrapper">
+          <Bar v-if="barReady" :data="barData" :options="barOptions" />
+          <p v-else class="text-muted text-center mt-2">Aucune donnée disponible.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dernières transactions -->
+    <h2 class="section-title">10 dernières transactions</h2>
+    <div class="card">
+      <div v-if="loading" class="spinner"></div>
+
+      <table v-else-if="transactions.length">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Montant</th>
+            <th>Date</th>
+            <th>Mode</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="t in transactions" :key="t.uid">
+            <td><span :class="badgeClass(t.type)">{{ t.type }}</span></td>
+            <td>{{ t.description }}</td>
+            <td class="montant-cell" :class="t.type === 'Versement' ? 'montant-pos' : 'montant-neg'">
+              {{ t.type === 'Versement' ? '+' : '-' }} {{ formatMontant(t.montant) }}
+            </td>
+            <td>{{ formatDate(t.date) }}</td>
+            <td>{{ formatMode(t.mode) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p v-else class="text-muted text-center mt-2">Aucune transaction enregistrée.</p>
+    </div>
+
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { Doughnut, Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title
+} from 'chart.js'
+import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title)
+
 const authStore = useAuthStore()
+
+const loading = ref(false)
+const transactions = ref([])
+const kpi = ref({
+  totalVersements: 0, nbVersements: 0,
+  totalCharges: 0,    nbCharges: 0,
+  totalPersonnel: 0,  nbPersonnel: 0,
+  nbClients: 0
+})
+
+// Données brutes pour les graphiques
+const rawVersements = ref([])
+
+const dateAujourdhui = new Date().toLocaleDateString('fr-BE', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+})
+
+// ── Donut ──────────────────────────────────────────────
+const donutReady = computed(() =>
+  kpi.value.totalVersements + kpi.value.totalCharges + kpi.value.totalPersonnel > 0
+)
+
+const donutData = computed(() => ({
+  labels: ['Versements', 'Charges', 'Personnel'],
+  datasets: [{
+    data: [kpi.value.totalVersements, kpi.value.totalCharges, kpi.value.totalPersonnel],
+    backgroundColor: ['#2E7D5E', '#e53935', '#1e88e5'],
+    borderWidth: 0,
+    hoverOffset: 8
+  }]
+}))
+
+const donutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } },
+    tooltip: {
+      callbacks: {
+        label: ctx => {
+          const val = ctx.parsed
+          return `  ${ctx.label} : ${new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR' }).format(val)}`
+        }
+      }
+    }
+  }
+}
+
+// ── Bar ────────────────────────────────────────────────
+const barReady = computed(() => rawVersements.value.length > 0)
+
+const barData = computed(() => {
+  const now = new Date()
+  const mois = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    mois.push({
+      label: d.toLocaleDateString('fr-BE', { month: 'short', year: '2-digit' }),
+      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    })
+  }
+
+  const totaux = mois.map(m => {
+    return rawVersements.value
+      .filter(v => v.dateVersement?.startsWith(m.key))
+      .reduce((s, v) => s + (v.montantTTC || 0), 0)
+  })
+
+  return {
+    labels: mois.map(m => m.label),
+    datasets: [{
+      label: 'Versements (€)',
+      data: totaux,
+      backgroundColor: 'rgba(46, 125, 94, 0.7)',
+      borderColor: '#2E7D5E',
+      borderWidth: 2,
+      borderRadius: 6,
+      borderSkipped: false
+    }]
+  }
+})
+
+const barOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: ctx => `  ${new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR' }).format(ctx.parsed.y)}`
+      }
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        callback: val => new Intl.NumberFormat('fr-BE', { notation: 'compact', currency: 'EUR' }).format(val) + ' €'
+      },
+      grid: { color: 'rgba(0,0,0,0.05)' }
+    },
+    x: { grid: { display: false } }
+  }
+}
+
+// ── Chargement ──────────────────────────────────────────
+onMounted(loadData)
+
+async function loadData() {
+  loading.value = true
+  try {
+    const [v, pc, pe, cl] = await Promise.all([
+      api.get('/versements'),
+      api.get('/paiement-charges'),
+      api.get('/paiement-employes'),
+      api.get('/clients')
+    ])
+
+    rawVersements.value = v.data
+
+    kpi.value.nbVersements    = v.data.length
+    kpi.value.totalVersements = v.data.reduce((s, x) => s + (x.montantTTC || 0), 0)
+    kpi.value.nbCharges       = pc.data.length
+    kpi.value.totalCharges    = pc.data.reduce((s, x) => s + (x.montant || 0), 0)
+    kpi.value.nbPersonnel     = pe.data.length
+    kpi.value.totalPersonnel  = pe.data.reduce((s, x) => s + (x.montant || 0), 0)
+    kpi.value.nbClients       = cl.data.length
+
+    const versements = v.data.map(x => ({
+      uid: `v-${x.id}`, type: 'Versement',
+      description: x.clientNom, montant: x.montantTTC,
+      date: x.dateVersement, mode: x.modePaiement, _date: x.dateVersement
+    }))
+    const paiementsCharges = pc.data.map(x => ({
+      uid: `pc-${x.id}`, type: 'Charge',
+      description: x.chargeNom, montant: x.montant,
+      date: x.datePaiement, mode: x.modePaiement, _date: x.datePaiement
+    }))
+    const paiementsEmployes = pe.data.map(x => ({
+      uid: `pe-${x.id}`, type: 'Personnel',
+      description: x.employeNom, montant: x.montant,
+      date: x.datePaiement, mode: x.modePaiement, _date: x.datePaiement
+    }))
+
+    transactions.value = [...versements, ...paiementsCharges, ...paiementsEmployes]
+      .sort((a, b) => b._date.localeCompare(a._date))
+      .slice(0, 10)
+  } catch {
+    // silencieux
+  } finally {
+    loading.value = false
+  }
+}
+
+function badgeClass(type) {
+  if (type === 'Versement') return 'badge badge-success'
+  if (type === 'Charge')    return 'badge badge-danger'
+  return 'badge badge-secondary'
+}
+
+function formatMontant(m) {
+  return new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR' }).format(m)
+}
+
+function formatDate(d) {
+  if (!d) return '-'
+  return new Date(d).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+function formatMode(mode) {
+  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE_BANCAIRE: 'Carte' }
+  return labels[mode] || mode || '-'
+}
 </script>
 
 <style scoped>
-ul {
-  list-style: none;
-  padding-left: 0;
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
 }
 
-li {
-  margin: 0.5rem 0;
+/* ── Bandeau bienvenue ── */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+.welcome-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.welcome-label {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 0.2rem;
+}
+.welcome-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.3rem;
+  text-transform: capitalize;
+}
+.welcome-date {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  text-transform: capitalize;
+}
+.welcome-logo svg {
+  width: 72px;
+  height: 72px;
+  opacity: 0.6;
 }
 
-li a {
-  color: var(--color-primary);
-  text-decoration: none;
+/* ── KPI Grid ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.kpi-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.kpi-green  { border-left-color: var(--color-success); }
+.kpi-red    { border-left-color: var(--color-danger); }
+.kpi-blue   { border-left-color: var(--color-info); }
+.kpi-orange { border-left-color: var(--color-warning); }
+
+.kpi-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kpi-icon svg { width: 22px; height: 22px; }
+.kpi-green  .kpi-icon { background: #e8f5e9; color: var(--color-success); }
+.kpi-red    .kpi-icon { background: #fdecea; color: var(--color-danger); }
+.kpi-blue   .kpi-icon { background: #e3f6fb; color: var(--color-info); }
+.kpi-orange .kpi-icon { background: #fff8e1; color: #f59e0b; }
+
+.kpi-label {
+  font-size: 0.78rem;
+  color: var(--color-gray-600);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+.kpi-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.2;
+}
+.kpi-sub {
+  font-size: 0.78rem;
+  color: var(--color-gray-500);
+  margin-top: 0.2rem;
 }
 
-li a:hover {
-  text-decoration: underline;
+/* ── Graphiques ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.chart-card { margin-bottom: 0; }
+.chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: 1rem;
+}
+.chart-wrapper {
+  height: 260px;
+  position: relative;
+}
+
+/* ── Titres de section ── */
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Actions rapides ── */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  filter: brightness(1.05);
+}
+.action-green { background: linear-gradient(135deg, #2E7D5E, #1a5c43); }
+.action-red   { background: linear-gradient(135deg, #e53935, #b71c1c); }
+.action-blue  { background: linear-gradient(135deg, #1e88e5, #1565c0); }
+
+.action-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-icon svg { width: 22px; height: 22px; stroke: white; }
+.action-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+.action-desc { font-size: 0.8rem; opacity: 0.8; }
+
+/* ── Tableau ── */
+.montant-cell { font-weight: 600; }
+.montant-pos  { color: var(--color-success); }
+.montant-neg  { color: var(--color-danger); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .charts-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .charts-grid   { grid-template-columns: 1fr; }
+  .actions-grid  { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kpi-grid     { grid-template-columns: 1fr; }
+  .welcome-logo { display: none; }
+  .welcome-name { font-size: 1.5rem; }
 }
 </style>
