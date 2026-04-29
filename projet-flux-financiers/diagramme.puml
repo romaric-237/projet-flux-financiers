@@ -1,0 +1,246 @@
+@startuml DiagrammeClasses_Final_v2
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam titleFontSize 16
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 30
+skinparam ranksep 30
+
+
+
+
+
+
+title Diagramme de Classes Application Gestion des Flux Financiers\nASBL Terra Sana
+
+enum ModePaiement <<enum>> {
+  VIREMENT
+  ESPECES
+  CHEQUE
+  CARTE
+}
+
+enum TypePaiement <<enum>> {
+  SALAIRE
+  PRIME
+}
+
+enum StatutEmploye <<enum>> {
+  ACTIF
+  INACTIF
+}
+
+enum Role <<enum>> {
+  ADMIN
+  GESTIONNAIRE
+}
+
+enum ActionAudit <<enum>> {
+  CREATION
+  MODIFICATION
+  SUPPRESSION
+}
+
+enum CategorieCharge <<enum>> {
+  VEHICULES
+  INFRASTRUCTURE
+  FISCALES_SOCIALES
+  SERVICES_EXTERNES
+}
+
+' ================================================================
+' CLASSES ABSTRAITES
+' ================================================================
+
+abstract class AbstractPaiement <<abstract>> {
+  - id : Long
+  - montant : BigDecimal
+  - date : LocalDate
+  - modePaiement : ModePaiement
+  --
+  + validerMontant() : boolean
+}
+
+abstract class Personne <<abstract>> {
+  - id : Long
+  - nom : String
+  - prenom : String
+  - email : String
+  - dateCreation : LocalDate
+}
+
+' ================================================================
+' CLASSES CONCRÈTES
+' ================================================================
+
+class PaiementEmploye {
+  - type : TypePaiement
+}
+
+class Employe {
+  - statut : StatutEmploye
+  --
+  + desactiver() : void
+  + getTotalPaiements() : BigDecimal
+  + estSupprimable() : boolean
+}
+
+class User {
+  - username : String
+  - password : String
+  - role : Role
+  - actif : boolean
+  --
+  + seConnecter() : String
+  + changerMotDePasse(ancien, nouveau) : void
+}
+
+class AuditLog  {
+  - id : Long
+  - action : ActionAudit
+  - entiteType : String
+  - entiteId : Long
+  - details : String
+  - dateAction : LocalDateTime
+}
+
+class Client {
+  - telephone : String
+  --
+  + getTotalVersements() : BigDecimal
+  + getNombreVersements() : int
+}
+
+class Versement {
+  - remarque : String
+}
+
+class Budget  {
+  - id : Long
+  - categorie : CategorieCharge
+  - mois : int
+  - annee : int
+  - montantBudgete : BigDecimal
+  --
+  + calculerEcart(realise) : BigDecimal
+  + getCodeCouleur(realise) : String
+}
+
+class Charge {
+  - id : Long
+  - libelle : String
+  - categorie : CategorieCharge
+  --
+  + getTotalPaiements() : BigDecimal
+}
+
+class ChargeRecurrente  {
+  - id : Long
+  - montantDefaut : BigDecimal
+  - actif : boolean
+  --
+  + genererPaiementMensuel() : PaiementCharge
+}
+
+class SeuilBudget  {
+  - id : Long
+  - categorie : CategorieCharge
+  - plafond : BigDecimal
+  --
+  + verifierDepassement(total) : boolean
+  + estProcheDuSeuil(total) : boolean
+}
+
+class PaiementCharge {
+}
+
+
+' --- Lignes horizontales ---
+ModePaiement -[hidden]right- AbstractPaiement
+
+TypePaiement -[hidden]right- PaiementEmploye
+PaiementEmploye -[hidden]right- StatutEmploye
+StatutEmploye -[hidden]right- Employe
+Employe -[hidden]right- AuditLog
+AuditLog -[hidden]right- User
+User -[hidden]right- Role
+Role -[hidden]right- ActionAudit
+
+Versement -[hidden]right- Client
+Client -[hidden]right- Personne
+Personne -[hidden]right- Budget
+
+Charge -[hidden]right- ChargeRecurrente
+ChargeRecurrente -[hidden]right- SeuilBudget
+
+' --- Colonnes verticales ---
+AbstractPaiement -[hidden]down- PaiementEmploye
+PaiementEmploye -[hidden]down- Versement
+Versement -[hidden]down- PaiementCharge
+PaiementCharge -[hidden]down- Charge
+
+Employe -[hidden]down- Client
+AuditLog -[hidden]down- Personne
+User -[hidden]down- Budget
+Budget -[hidden]down- SeuilBudget
+
+CategorieCharge -[hidden]down- SeuilBudget
+
+' ================================================================
+' HÉRITAGE — Personne
+' (User, Client ET Employe héritent de Personne)
+' ================================================================
+
+Personne <|-- User
+Personne <|-- Client
+Personne <|-- Employe
+
+' ================================================================
+' HÉRITAGE — AbstractPaiement
+' ================================================================
+
+AbstractPaiement <|-- PaiementEmploye
+AbstractPaiement <|-- Versement
+AbstractPaiement <|-- PaiementCharge
+
+' ================================================================
+' ASSOCIATIONS — User (simples, PAS de composition)
+' ================================================================
+
+User "1" -- "0..*" Client : crée >
+User "1" -- "0..*" Employe : crée >
+User "1" -- "0..*" AuditLog : effectue >
+User "1" --- "0..*" AbstractPaiement : enregistre >
+User "1" -- "0..*" Budget : définit >
+User "1" -- "0..*" SeuilBudget : configure >
+User "1" -- "0..*" ChargeRecurrente : configure >
+User "1" -- "0..*" Charge : gère >
+
+' ================================================================
+' ASSOCIATIONS — Entités métier
+' ================================================================
+
+Client "1" *-- "0..*" Versement : possède >
+Employe "1" *-- "0..*" PaiementEmploye : reçoit >
+Charge "1" *--- "0..*" PaiementCharge : génère >
+Charge "1" -right- "0..1" ChargeRecurrente : peut être >
+
+' ================================================================
+' ASSOCIATIONS — Enums (uniquement relations directes)
+' ================================================================
+
+AbstractPaiement -left-> ModePaiement
+PaiementEmploye -left-> TypePaiement
+Employe -left-> StatutEmploye
+User -right-> Role
+AuditLog -right-> ActionAudit
+Charge -right-> CategorieCharge
+
+
+
+
+@enduml

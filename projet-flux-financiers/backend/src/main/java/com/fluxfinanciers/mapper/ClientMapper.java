@@ -13,6 +13,8 @@ public final class ClientMapper {
         Client client = new Client();
         client.setNom(request.getNom());
         client.setPrenom(request.getPrenom());
+        client.setEmail(request.getEmail());
+        client.setTelephone(request.getTelephone());
         client.setCreatedBy(createdBy);
         return client;
     }
@@ -22,9 +24,13 @@ public final class ClientMapper {
         response.setId(client.getId());
         response.setNom(client.getNom());
         response.setPrenom(client.getPrenom());
-        response.setCreatedAt(client.getCreatedAt());
-        response.setCreatedById(client.getCreatedBy().getId());
-        response.setCreatedByUsername(client.getCreatedBy().getUsername());
+        response.setEmail(client.getEmail());
+        response.setTelephone(client.getTelephone());
+        response.setDateCreation(client.getDateCreation());
+        if (client.getCreatedBy() != null) {
+            response.setCreatedById(client.getCreatedBy().getId());
+            response.setCreatedByUsername(client.getCreatedBy().getUsername());
+        }
         return response;
     }
 }

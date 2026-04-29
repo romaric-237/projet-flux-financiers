@@ -1,6 +1,6 @@
 package com.fluxfinanciers.dto.request;
 
-import com.fluxfinanciers.enums.TypeCharge;
+import com.fluxfinanciers.enums.CategorieCharge;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChargeRequest {
 
-    @NotBlank(message = "Le nom de la charge est obligatoire")
-    @Size(max = 200, message = "Le nom ne peut pas dépasser 200 caractères")
-    private String nomCharge;
+    @NotBlank(message = "Le libellé de la charge est obligatoire")
+    @Size(max = 200)
+    private String libelle;
 
-    @NotNull(message = "Le type de charge est obligatoire")
-    private TypeCharge typeCharge;
+    @NotNull(message = "La catégorie de charge est obligatoire")
+    private CategorieCharge categorie;
 
     @NotNull(message = "Le créateur est obligatoire")
     private Long createdById;

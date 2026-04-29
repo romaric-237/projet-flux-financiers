@@ -19,12 +19,12 @@ const isLoginPage = computed(() => route.name === 'login')
 <style>
 #app {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--color-gray-100);
 }
 
 main {
   min-height: calc(100vh - 60px);
-  padding: 20px;
+  padding: 1.5rem 1.25rem;
 }
 
 main.with-navbar {

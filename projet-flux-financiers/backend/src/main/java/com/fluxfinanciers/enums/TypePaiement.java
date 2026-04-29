@@ -1,5 +1,6 @@
 package com.fluxfinanciers.enums;
 
-public enum TypePaiementEmploye { SALAIRE,
+public enum TypePaiement {
+    SALAIRE,
     PRIME
 }

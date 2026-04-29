@@ -43,7 +43,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: flux_password
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: true
-      JWT_SECRET: votre_secret_jwt_super_securise_changez_moi_en_production_12345
+      JWT_SECRET: FluxFinanciers@Stage2026-Uccle-SecretJWT-XyZ9-2026
       JWT_EXPIRATION: 86400000
     depends_on:
       mysql:
@@ -65,7 +65,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      VITE_API_BASE_URL: http://localhost:8080/api
+      VITE_API_TARGET: http://backend:8081
     depends_on:
       - backend
     networks:

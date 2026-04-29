@@ -7,5 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface VersementRepository extends JpaRepository<Versement, Long> {
-    List<Versement> findByDateVersementBetween(LocalDate dateDebut, LocalDate dateFin);
+    List<Versement> findByDateBetween(LocalDate dateDebut, LocalDate dateFin);
+    boolean existsByClientId(Long clientId);
 }

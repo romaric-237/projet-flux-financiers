@@ -1,20 +1,19 @@
 # 💰 Application Gestion des Flux Financiers
 
-**Version :** 2.1 FINAL  
-**Auteur :** Kenfack Romaric  
-**Superviseur :** Didier Servaye  
-**Période :** Janvier - Mars 2026 (Stage 11 semaines)
+**Version :** 2.1 FINAL
+**Auteur :** Kenfack Romaric
+**Superviseur :** Didier Servaye
 
 ---
 
 ## 📋 Description
 
-Application web complète de gestion des flux financiers (recettes et dépenses) avec :
+Application web complète de gestion des flux financiers (recettes et dépenses) pour l'ASBL Terra Sana :
 - **Gestion des clients** et leurs versements
 - **Gestion des employés** et paiements personnel (salaires, primes)
 - **Gestion des charges** avec référentiel de 19 charges réelles
 - **Tableau de bord** avec graphiques et statistiques
-- **Export Excel** complet
+- **Export Excel & CSV** des données
 - **Traçabilité** complète (qui a créé quoi et quand)
 
 ---
@@ -28,12 +27,12 @@ Application web complète de gestion des flux financiers (recettes et dépenses)
 │         DOCKER COMPOSE                  │
 ├─────────────────────────────────────────┤
 │                                         │
-│  ┌──────────┐  ┌──────────┐  ┌───────┐│
-│  │  MySQL   │  │  Spring  │  │ Vue.js││
-│  │    8.0   │  │  Boot 3  │  │   3   ││
-│  │(Port 3307)│ │ (Port    │  │(Port  ││
-│  │          │  │  8080)   │  │ 5173) ││
-│  └──────────┘  └──────────┘  └───────┘│
+│  ┌──────────┐  ┌──────────┐  ┌───────┐ │
+│  │  MySQL   │  │  Spring  │  │Vue.js │ │
+│  │   8.0    │  │  Boot 3  │  │   3   │ │
+│  │(Port 3307)│ │(Port 8081)│ │(Port  │ │
+│  │          │  │          │  │ 5173) │ │
+│  └──────────┘  └──────────┘  └───────┘ │
 │                                         │
 └─────────────────────────────────────────┘
 ```
@@ -43,9 +42,9 @@ Application web complète de gestion des flux financiers (recettes et dépenses)
 **Backend :**
 - ☕ Spring Boot 3.2.2 (Java 21)
 - 🗄️ Spring Data JPA / Hibernate
-- 🔐 Spring Security + JWT
+- 🔐 Spring Security + JWT (stateless)
 - 📊 Apache POI (export Excel)
-- 🛠️ Lombok + MapStruct
+- 🛠️ Lombok
 
 **Frontend :**
 - 🖼️ Vue.js 3.4 (Composition API)
@@ -59,8 +58,6 @@ Application web complète de gestion des flux financiers (recettes et dépenses)
 - 🐬 MySQL 8.0
 - 7 tables
 - 5 énumérations
-- 13 relations
-- Vues SQL pour reporting
 
 **DevOps :**
 - 🐳 Docker & Docker Compose
@@ -77,7 +74,7 @@ Application web complète de gestion des flux financiers (recettes et dépenses)
 - ✅ Docker installé ([Docker Desktop](https://www.docker.com/products/docker-desktop/))
 - ✅ Docker Compose installé (inclus dans Docker Desktop)
 - ✅ Au minimum 4GB RAM disponible
-- ✅ Ports libres : 3307 (MySQL), 8080 (Backend), 5173 (Frontend)
+- ✅ Ports libres : 3307 (MySQL), **8081** (Backend), 5173 (Frontend)
 
 ### Démarrage Rapide (3 commandes)
 
@@ -100,9 +97,9 @@ Une fois démarré :
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| **Frontend (Vue.js)** | http://localhost:5173 | username: `admin`<br>password: `admin123` |
-| **Backend API** | http://localhost:8080/api | JWT via login |
-| **MySQL** | localhost:3307 | user: `flux_user`<br>password: `flux_password`<br>database: `flux_financiers` |
+| **Frontend (Vue.js)** | http://localhost:5173 | username: `admin` / password: `admin123` |
+| **Backend API** | http://localhost:8081/api | JWT via login |
+| **MySQL** | localhost:3307 | user: `flux_user` / password: `flux_password` / db: `flux_financiers` |
 
 ### Données Initiales
 
@@ -177,8 +174,9 @@ docker-compose logs -f backend
 docker-compose logs -f frontend
 docker-compose logs -f mysql
 
-# Reconstruire les images (après modification du code)
-docker-compose up -d --build
+# Reconstruire le backend (après modification du code Java)
+docker-compose build --no-cache backend
+docker-compose up -d
 
 # Arrêter et supprimer TOUT (y compris les volumes)
 docker-compose down -v
@@ -206,9 +204,8 @@ SELECT * FROM user;
 ### Backend
 
 ```bash
-# Tester l'API (exemples)
-curl http://localhost:8080/api/health
-curl -X POST http://localhost:8080/api/auth/login \
+# Tester l'API
+curl -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 ```
@@ -216,7 +213,7 @@ curl -X POST http://localhost:8080/api/auth/login \
 ### Frontend
 
 ```bash
-# Si vous voulez développer en dehors de Docker
+# Développer en dehors de Docker
 cd frontend
 npm install
 npm run dev
@@ -232,7 +229,7 @@ npm run dev
 2. **client** - Clients avec traçabilité
 3. **versement** - Recettes clients
 4. **employe** - Employés avec traçabilité
-5. **paiement_personnel** - Salaires & primes
+5. **paiement_employe** - Salaires & primes
 6. **charge** - Référentiel des charges avec traçabilité
 7. **paiement_charge** - Paiements des charges
 
@@ -242,14 +239,14 @@ npm run dev
 - User → Employe (1:N, created_by)
 - User → Charge (1:N, created_by)
 - Client → Versement (1:N)
-- Employe → PaiementPersonnel (1:N)
+- Employe → PaiementEmploye (1:N)
 - Charge → PaiementCharge (1:N)
 
 ### Énumérations
 
 - **RoleUser** : GESTIONNAIRE
 - **StatutEmploye** : ACTIF, INACTIF
-- **TypePaiementPersonnel** : SALAIRE, PRIME
+- **TypePaiementEmploye** : SALAIRE, PRIME
 - **ModePaiement** : ESPECES, VIREMENT, CHEQUE, CARTE_BANCAIRE
 - **TypeCharge** : VEHICULES, INFRASTRUCTURE, FISCALES_SOCIALES, SERVICES_EXTERNES
 
@@ -257,12 +254,11 @@ npm run dev
 
 ## 🔒 Sécurité
 
-- 🔐 Authentification JWT
+- 🔐 Authentification JWT (stateless — CSRF désactivé volontairement)
 - 🔑 Mots de passe hashés avec BCrypt
 - 🛡️ Spring Security
-- 🚫 CORS configuré
-- 🔒 Protection CSRF
-- ✅ Validation des données (Bean Validation)
+- 🚫 CORS configuré (localhost en développement)
+- ✅ Validation des données (Bean Validation : @NotNull, @PastOrPresent, @DecimalMin)
 
 ---
 
@@ -272,11 +268,14 @@ npm run dev
 - ✅ CRUD clients avec traçabilité
 - ✅ Enregistrement des versements (recettes)
 - ✅ Historique par client
+- ✅ Suppression bloquée si le client a des versements associés
 
 ### Module Employés
 - ✅ CRUD employés avec traçabilité
 - ✅ Gestion du statut (ACTIF/INACTIF)
 - ✅ Enregistrement salaires & primes
+- ✅ Seuls les employés ACTIFS peuvent recevoir un paiement
+- ✅ Suppression bloquée si l'employé a des paiements associés
 - ✅ Double classification (type + mode de paiement)
 
 ### Module Charges
@@ -285,17 +284,24 @@ npm run dev
 - ✅ Enregistrement des paiements de charges
 - ✅ Traçabilité complète
 
+### Règles de gestion
+- ✅ Date de paiement : ne peut pas être dans le futur (frontend + backend)
+- ✅ Mode de paiement : obligatoire pour tous les types de transaction
+- ✅ Montant : doit être supérieur à 0
+
 ### Tableau de Bord
-- 📊 Graphique évolution temporelle (6 mois)
-- 📊 Répartition dépenses Personnel vs Charges
-- 📊 Répartition charges par catégorie
-- 📊 Top 5 charges les plus coûteuses
-- 💰 Synthèse financière globale
+- 📊 4 KPIs : Total Recettes, Total Dépenses, Solde, Variation vs mois précédent
+- 📊 Graphique Doughnut : répartition Personnel vs Charges
+- 📊 Graphique Line : évolution recettes & dépenses sur 6 mois
+- 📋 Dernières transactions filtrables (Ce mois / Trimestre / Année / Tout)
+- ⚡ Actions rapides : nouveau versement, paiement charge, paiement personnel
 
 ### Historique & Exports
-- 🔍 Filtres avancés multi-critères
-- 📥 Export Excel complet (5 feuilles)
-- 📋 Rapport de synthèse
+- 🔍 3 onglets : Recettes / Dépenses / Global avec solde calculé
+- 🔍 Filtres avancés multi-critères (date, mode, montant min/max, type)
+- 📥 Export Excel (.xlsx) : versements, paiements charges, paiements employés
+- 📄 Export CSV (.csv) : mêmes données, format alternatif
+- 🗓️ Filtrage par période optionnel sur les exports
 
 ---
 
@@ -309,7 +315,7 @@ docker-compose logs
 
 # Vérifier que les ports ne sont pas utilisés
 netstat -an | grep 3307
-netstat -an | grep 8080
+netstat -an | grep 8081
 netstat -an | grep 5173
 
 # Nettoyer et redémarrer
@@ -327,10 +333,9 @@ docker-compose logs mysql
 docker-compose restart backend
 ```
 
-### Problème de permissions
+### Problème de permissions (Linux/Mac)
 
 ```bash
-# Sur Linux/Mac, ajuster les permissions
 sudo chown -R $USER:$USER .
 ```
 
@@ -340,24 +345,21 @@ sudo chown -R $USER:$USER .
 
 ### Mode Développement
 
-Les fichiers sont montés en volumes, donc :
-- ✅ **Backend** : Modifications Java nécessitent rebuild (`docker-compose up -d --build backend`)
+- ✅ **Backend** : Modifications Java nécessitent rebuild (`docker-compose build --no-cache backend && docker-compose up -d`)
 - ✅ **Frontend** : Hot reload automatique (modifications visibles instantanément)
 - ✅ **Base de données** : Données persistantes dans volume Docker
 
 ### Mode Production
 
-Pour déployer en production :
-
 ```bash
 # 1. Changer les secrets dans docker-compose.yml
-#    - JWT_SECRET
+#    - JWT_SECRET (valeur longue et aléatoire)
 #    - MYSQL_ROOT_PASSWORD
 #    - MYSQL_PASSWORD
 
-# 2. Utiliser les Dockerfiles de production (build frontend)
-# 3. Désactiver CORS ou le restreindre
-# 4. Activer HTTPS
+# 2. Restreindre le CORS à votre domaine
+# 3. Activer HTTPS
+# 4. Changer le mot de passe admin par défaut
 ```
 
 ---
@@ -367,16 +369,15 @@ Pour déployer en production :
 - 📄 [Cahier des Charges v2.1](docs/Cahier_Charges_Flux_Financiers_v2.1.docx)
 - 📐 [Diagramme de Classes UML](docs/Diagramme_Classes_v2.1_FINAL_COMPLET.puml)
 - 🗄️ [MCD/MLD Complet](docs/MCD_MLD_v2.1_FINAL.txt)
-- 📋 [Résumé des Modifications](docs/Resume_v2.1_FINAL.txt)
 
 ---
 
 ## 🎓 Informations Stage
 
-**Stagiaire :** Kenfack Romaric  
-**Entreprise :** [Nom de l'entreprise]  
-**Superviseur :** Didier Servaye  
-**Période :** Janvier - Mars 2026 (11 semaines)  
+**Stagiaire :** Kenfack Romaric
+**Entreprise :** ASBL Terra Sana
+**Superviseur :** Didier Servaye
+**Période :** Janvier - Mars 2026 (11 semaines)
 **Objectif :** Développement complet d'une application de gestion des flux financiers
 
 ---
@@ -385,7 +386,6 @@ Pour déployer en production :
 
 Pour toute question :
 - 📧 Email : [votre.email@exemple.com]
-- 💬 Issues GitHub : [lien si applicable]
 
 ---
 

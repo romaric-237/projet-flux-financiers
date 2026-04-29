@@ -40,6 +40,19 @@ public class ExportController {
         return buildResponse(data, format, "paiements-charges");
     }
 
+    @GetMapping("/complet")
+    public ResponseEntity<byte[]> exportComplet(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
+
+        byte[] data = exportService.exportComplet(dateDebut, dateFin);
+        String filename = "flux-financiers-complet_" + LocalDate.now() + ".xlsx";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(data);
+    }
+
     @GetMapping("/paiements-employes")
     public ResponseEntity<byte[]> exportPaiementsEmployes(
             @RequestParam(defaultValue = "EXCEL") String format,

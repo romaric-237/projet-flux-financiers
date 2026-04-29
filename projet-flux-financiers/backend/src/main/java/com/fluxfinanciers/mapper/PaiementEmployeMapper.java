@@ -12,10 +12,10 @@ public final class PaiementEmployeMapper {
     public static PaiementEmploye toEntity(PaiementEmployeRequest request, Employe employe) {
         PaiementEmploye paiement = new PaiementEmploye();
         paiement.setEmploye(employe);
-        paiement.setTypePaiement(request.getTypePaiement());
+        paiement.setType(request.getType());
         paiement.setModePaiement(request.getModePaiement());
         paiement.setMontant(request.getMontant());
-        paiement.setDatePaiement(request.getDatePaiement());
+        paiement.setDate(request.getDate());
         paiement.setRemarque(request.getRemarque());
         return paiement;
     }
@@ -25,10 +25,10 @@ public final class PaiementEmployeMapper {
         response.setId(paiement.getId());
         response.setEmployeId(paiement.getEmploye().getId());
         response.setEmployeNom(paiement.getEmploye().getFullName());
-        response.setTypePaiement(paiement.getTypePaiement());
+        response.setType(paiement.getType());
         response.setModePaiement(paiement.getModePaiement());
         response.setMontant(paiement.getMontant());
-        response.setDatePaiement(paiement.getDatePaiement());
+        response.setDate(paiement.getDate());
         response.setRemarque(paiement.getRemarque());
         return response;
     }

@@ -1,9 +1,6 @@
 package com.fluxfinanciers.enums;
 
-/*
- * Énumération du type de charge (classification métier)
- */
-public enum TypeCharge {
+public enum CategorieCharge {
     VEHICULES,
     INFRASTRUCTURE,
     FISCALES_SOCIALES,

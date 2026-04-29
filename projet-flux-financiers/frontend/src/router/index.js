@@ -63,6 +63,24 @@ const router = createRouter({
       name: 'export',
       component: () => import('@/views/ExportView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/views/AdminView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/profil',
+      name: 'profil',
+      component: () => import('@/views/ProfilView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/audit',
+      name: 'audit',
+      component: () => import('@/views/AuditView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
@@ -70,10 +88,12 @@ const router = createRouter({
 // Navigation guard pour protéger les routes
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'login' })
   } else if (to.name === 'login' && authStore.isAuthenticated) {
+    next({ name: 'dashboard' })
+  } else if (to.meta.requiresAdmin && !authStore.isAdmin) {
     next({ name: 'dashboard' })
   } else {
     next()

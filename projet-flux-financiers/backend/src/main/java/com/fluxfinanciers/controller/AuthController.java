@@ -2,6 +2,7 @@ package com.fluxfinanciers.controller;
 
 import com.fluxfinanciers.dto.request.LoginRequest;
 import com.fluxfinanciers.dto.response.AuthResponse;
+import com.fluxfinanciers.entity.User;
 import com.fluxfinanciers.repository.UserRepository;
 import com.fluxfinanciers.security.JwtService;
 import com.fluxfinanciers.security.UserDetailsServiceImpl;
@@ -32,11 +33,9 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        String role = userDetails.getAuthorities().iterator().next().getAuthority();
-        Long userId = userRepository.findByUsername(request.getUsername())
-                .map(com.fluxfinanciers.entity.User::getId)
-                .orElse(null);
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        String role = user.getRole().name();
 
-        return ResponseEntity.ok(new AuthResponse(userId, token, request.getUsername(), role));
+        return ResponseEntity.ok(new AuthResponse(user.getId(), token, user.getUsername(), user.getNom(), user.getPrenom(), role));
     }
 }

@@ -3,6 +3,7 @@ package com.fluxfinanciers.service;
 import com.fluxfinanciers.dto.request.ChargeRequest;
 import com.fluxfinanciers.entity.Charge;
 import com.fluxfinanciers.entity.User;
+import com.fluxfinanciers.enums.ActionAudit;
 import com.fluxfinanciers.exception.ResourceNotFoundException;
 import com.fluxfinanciers.mapper.ChargeMapper;
 import com.fluxfinanciers.repository.ChargeRepository;
@@ -20,6 +21,7 @@ public class ChargeService {
 
     private final ChargeRepository chargeRepository;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     public List<Charge> findAll() {
         return chargeRepository.findAll();
@@ -35,20 +37,25 @@ public class ChargeService {
         User createdBy = userRepository.findById(request.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedById()));
         Charge charge = ChargeMapper.toEntity(request, createdBy);
-        return chargeRepository.save(charge);
+        Charge saved = chargeRepository.save(charge);
+        auditLogService.log(ActionAudit.CREATION, "Charge", saved.getId(), "Charge créée: " + saved.getLibelle());
+        return saved;
     }
 
     @Transactional
     public Charge update(Long id, ChargeRequest request) {
         Charge existing = findById(id);
-        existing.setNomCharge(request.getNomCharge());
-        existing.setTypeCharge(request.getTypeCharge());
-        return chargeRepository.save(existing);
+        existing.setLibelle(request.getLibelle());
+        existing.setCategorie(request.getCategorie());
+        Charge saved = chargeRepository.save(existing);
+        auditLogService.log(ActionAudit.MODIFICATION, "Charge", id, "Charge modifiée: " + saved.getLibelle());
+        return saved;
     }
 
     @Transactional
     public void delete(Long id) {
         Charge existing = findById(id);
         chargeRepository.delete(existing);
+        auditLogService.log(ActionAudit.SUPPRESSION, "Charge", id, "Charge supprimée: " + existing.getLibelle());
     }
 }

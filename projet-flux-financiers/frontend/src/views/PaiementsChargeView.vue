@@ -21,9 +21,9 @@
         </thead>
         <tbody>
           <tr v-for="p in paiements" :key="p.id">
-            <td>{{ p.chargeNom }}</td>
+            <td>{{ p.chargeLibelle }}</td>
             <td>{{ formatMontant(p.montant) }}</td>
-            <td>{{ p.datePaiement }}</td>
+            <td>{{ p.date }}</td>
             <td>{{ formatMode(p.modePaiement) }}</td>
             <td>{{ p.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -44,7 +44,7 @@
             <label>Charge *</label>
             <select v-model="form.chargeId" :class="{ error: errors.chargeId }">
               <option value="">-- Sélectionner une charge --</option>
-              <option v-for="c in charges" :key="c.id" :value="c.id">{{ c.nomCharge }}</option>
+              <option v-for="c in charges" :key="c.id" :value="c.id">{{ c.libelle }}</option>
             </select>
             <span v-if="errors.chargeId" class="error-message">{{ errors.chargeId }}</span>
           </div>
@@ -65,7 +65,7 @@
               <option value="ESPECES">Espèces</option>
               <option value="VIREMENT">Virement</option>
               <option value="CHEQUE">Chèque</option>
-              <option value="CARTE_BANCAIRE">Carte bancaire</option>
+              <option value="CARTE">Carte bancaire</option>
             </select>
             <span v-if="errors.modePaiement" class="error-message">{{ errors.modePaiement }}</span>
           </div>
@@ -87,10 +87,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const route = useRoute()
 
 const paiements = ref([])
 const charges = ref([])
@@ -103,6 +105,7 @@ const errors = ref({})
 
 onMounted(async () => {
   await Promise.all([loadPaiements(), loadCharges()])
+  if (route.query.action === 'new') openForm()
 })
 
 async function loadPaiements() {
@@ -133,7 +136,7 @@ function openForm(p = null) {
     form.value = {
       chargeId: p.chargeId,
       montant: p.montant,
-      datePaiement: p.datePaiement,
+      datePaiement: p.date,
       modePaiement: p.modePaiement || '',
       remarque: p.remarque || ''
     }
@@ -152,7 +155,11 @@ function validate() {
   const e = {}
   if (!form.value.chargeId) e.chargeId = 'La charge est obligatoire'
   if (!form.value.montant || form.value.montant <= 0) e.montant = 'Le montant doit être supérieur à 0'
-  if (!form.value.datePaiement) e.datePaiement = 'La date est obligatoire'
+  if (!form.value.datePaiement) {
+    e.datePaiement = 'La date est obligatoire'
+  } else if (form.value.datePaiement > new Date().toISOString().split('T')[0]) {
+    e.datePaiement = 'La date ne peut pas être dans le futur'
+  }
   if (!form.value.modePaiement) e.modePaiement = 'Le mode de paiement est obligatoire'
   errors.value = e
   return Object.keys(e).length === 0
@@ -163,8 +170,8 @@ async function save() {
   saving.value = true
   const payload = {
     chargeId: form.value.chargeId,
-    montant: form.value.montant,
-    datePaiement: form.value.datePaiement,
+    montant: parseFloat(form.value.montant),
+    date: form.value.datePaiement,
     modePaiement: form.value.modePaiement,
     remarque: form.value.remarque || null
   }
@@ -201,29 +208,36 @@ function formatMontant(m) {
 }
 
 function formatMode(mode) {
-  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE_BANCAIRE: 'Carte bancaire' }
+  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE: 'Carte bancaire' }
   return labels[mode] || mode || '-'
 }
 </script>
 
 <style scoped>
+.container { max-width: 1100px; margin: 0 auto; }
+
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 1rem; animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: white; border-radius: var(--border-radius-xl);
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
+}
+.modal-card h3 {
+  font-size: 1rem; font-weight: 600; margin: 0;
+  padding: 1.1rem 1.5rem;
+  background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+}
+form { padding: 1.5rem; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 </style>

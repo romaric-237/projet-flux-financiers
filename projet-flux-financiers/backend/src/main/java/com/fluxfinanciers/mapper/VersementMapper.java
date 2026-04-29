@@ -12,8 +12,8 @@ public final class VersementMapper {
     public static Versement toEntity(VersementRequest request, Client client) {
         Versement versement = new Versement();
         versement.setClient(client);
-        versement.setMontantTTC(request.getMontantTTC());
-        versement.setDateVersement(request.getDateVersement());
+        versement.setMontant(request.getMontant());
+        versement.setDate(request.getDate());
         versement.setModePaiement(request.getModePaiement());
         versement.setRemarque(request.getRemarque());
         return versement;
@@ -24,8 +24,8 @@ public final class VersementMapper {
         response.setId(versement.getId());
         response.setClientId(versement.getClient().getId());
         response.setClientNom(versement.getClient().getFullName());
-        response.setMontantTTC(versement.getMontantTTC());
-        response.setDateVersement(versement.getDateVersement());
+        response.setMontant(versement.getMontant());
+        response.setDate(versement.getDate());
         response.setModePaiement(versement.getModePaiement());
         response.setRemarque(versement.getRemarque());
         return response;

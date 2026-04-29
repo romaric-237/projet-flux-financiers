@@ -13,18 +13,25 @@
     <!-- Stats -->
     <div class="stats-bar">
       <div class="stat-item">
-        <span class="stat-value">{{ clients.length }}</span>
-        <span class="stat-label">Total clients</span>
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-text">
+          <span class="stat-value">{{ clients.length }}</span>
+          <span class="stat-label">Total clients</span>
+        </div>
       </div>
-      <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-value">{{ clientsCeMois }}</span>
-        <span class="stat-label">Nouveaux ce mois</span>
+        <div class="stat-icon green">✨</div>
+        <div class="stat-text">
+          <span class="stat-value">{{ clientsCeMois }}</span>
+          <span class="stat-label">Nouveaux ce mois</span>
+        </div>
       </div>
-      <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-value">{{ formatMontant(totalVersements) }}</span>
-        <span class="stat-label">Total versements</span>
+        <div class="stat-icon purple">💰</div>
+        <div class="stat-text">
+          <span class="stat-value">{{ formatMontant(totalVersements) }}</span>
+          <span class="stat-label">Total versements</span>
+        </div>
       </div>
     </div>
 
@@ -95,24 +102,26 @@
           <h3>{{ editingId ? 'Modifier le client' : 'Nouveau client' }}</h3>
           <button class="modal-close" @click="closeForm">✕</button>
         </div>
-        <form @submit.prevent="save">
-          <div class="form-group">
-            <label>Nom *</label>
-            <input v-model="form.nom" type="text" :class="{ error: errors.nom }" placeholder="Nom de famille" />
-            <span v-if="errors.nom" class="error-message">{{ errors.nom }}</span>
-          </div>
-          <div class="form-group">
-            <label>Prénom *</label>
-            <input v-model="form.prenom" type="text" :class="{ error: errors.prenom }" placeholder="Prénom" />
-            <span v-if="errors.prenom" class="error-message">{{ errors.prenom }}</span>
-          </div>
-          <div class="modal-actions">
-            <button type="submit" class="btn btn-primary" :disabled="saving">
-              {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
-            </button>
-            <button type="button" class="btn btn-secondary" @click="closeForm">Annuler</button>
-          </div>
-        </form>
+        <div class="modal-body">
+          <form @submit.prevent="save">
+            <div class="form-group">
+              <label>Nom *</label>
+              <input v-model="form.nom" type="text" :class="{ error: errors.nom }" placeholder="Nom de famille" />
+              <span v-if="errors.nom" class="error-message">{{ errors.nom }}</span>
+            </div>
+            <div class="form-group">
+              <label>Prénom *</label>
+              <input v-model="form.prenom" type="text" :class="{ error: errors.prenom }" placeholder="Prénom" />
+              <span v-if="errors.prenom" class="error-message">{{ errors.prenom }}</span>
+            </div>
+            <div class="modal-actions">
+              <button type="submit" class="btn btn-primary" :disabled="saving">
+                {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+              </button>
+              <button type="button" class="btn btn-secondary" @click="closeForm">Annuler</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -317,167 +326,132 @@ function formatMode(mode) {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem 2rem;
-}
-
-/* ── En-tête ── */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-}
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.1rem;
-}
-.page-subtitle {
-  font-size: 0.875rem;
-  color: var(--color-gray-500);
-}
+.page { max-width: 1200px; margin: 0 auto; padding: 0 1rem 2rem; }
 
 /* ── Stats bar ── */
 .stats-bar {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 0;
   background: white;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-gray-200);
   margin-bottom: 1.25rem;
+  overflow: hidden;
 }
-.stat-item { display: flex; flex-direction: column; }
-.stat-value { font-size: 1.4rem; font-weight: 700; color: var(--color-gray-900); }
-.stat-label { font-size: 0.78rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.04em; }
-.stat-divider { width: 1px; height: 40px; background: var(--color-gray-200); }
-
-/* ── Recherche ── */
-.search-bar {
+.stat-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
-}
-.search-input-wrap {
-  position: relative;
   flex: 1;
-  max-width: 400px;
+  padding: 1.1rem 1.5rem;
+  border-right: 1px solid var(--color-gray-200);
 }
+.stat-item:last-child { border-right: none; }
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.stat-icon.blue   { background: var(--color-info-light); }
+.stat-icon.green  { background: var(--color-success-light); }
+.stat-icon.purple { background: #ede9fe; }
+.stat-text { display: flex; flex-direction: column; }
+.stat-value { font-size: 1.4rem; font-weight: 700; color: var(--color-gray-900); line-height: 1.2; }
+.stat-label { font-size: 0.72rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.1rem; }
+.stat-divider { display: none; } /* remplacé par border-right */
+
+/* ── Recherche ── */
+.search-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.search-input-wrap { position: relative; flex: 1; max-width: 420px; }
 .search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  color: var(--color-gray-500);
-  pointer-events: none;
+  position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%);
+  width: 17px; height: 17px; color: var(--color-gray-400); pointer-events: none;
 }
 .search-input {
-  width: 100%;
-  padding: 0.5rem 2.5rem 0.5rem 2.25rem;
-  border: 1px solid var(--color-gray-300);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: white;
-  transition: border-color 0.2s;
+  width: 100%; padding: 0.55rem 2.5rem 0.55rem 2.3rem;
+  border: 1px solid var(--color-gray-300); border-radius: var(--border-radius);
+  font-size: 0.9rem; background: white; transition: border-color 0.15s, box-shadow 0.15s;
 }
-.search-input:focus { outline: none; border-color: var(--color-primary); }
+.search-input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .search-clear {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-gray-500);
-  font-size: 0.85rem;
-  padding: 0;
+  position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--color-gray-400); font-size: 0.8rem; padding: 0;
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: background 0.15s;
 }
-.search-count { font-size: 0.875rem; color: var(--color-gray-500); white-space: nowrap; }
+.search-clear:hover { background: var(--color-gray-200); color: var(--color-gray-700); }
+.search-count { font-size: 0.82rem; color: var(--color-gray-500); white-space: nowrap; }
 
 /* ── Table ── */
 .table-card { padding: 0; overflow: hidden; }
 .table-card table { margin: 0; border-radius: 0; }
-
-.client-cell { display: flex; align-items: center; gap: 0.75rem; }
+.client-cell { display: flex; align-items: center; gap: 0.85rem; }
 .avatar {
-  width: 38px; height: 38px;
-  border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 700;
-  flex-shrink: 0;
+  color: white; font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+  box-shadow: 0 0 0 2px white, 0 0 0 3px rgba(0,0,0,0.08);
 }
-.client-name { font-weight: 600; color: var(--color-gray-800); font-size: 0.95rem; }
-
-.text-muted-sm { font-size: 0.875rem; color: var(--color-gray-500); }
-.montant-pos { color: var(--color-success); }
+.client-name { font-weight: 600; color: var(--color-gray-800); font-size: 0.9rem; }
+.text-muted-sm { font-size: 0.82rem; color: var(--color-gray-500); }
+.montant-pos { color: var(--color-success); font-weight: 600; }
 .font-bold { font-weight: 600; }
 
-/* ── Bouton info ── */
-.btn-info {
-  background-color: var(--color-info);
-  color: white;
-}
-.btn-info:hover { background-color: #138496; }
-
-/* ── Modals ── */
+/* ── Modal ── */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 2000;
-  padding: 1rem;
+  z-index: 2000; padding: 1rem;
+  animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  background: white; border-radius: var(--border-radius-xl);
+  width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.2s ease;
 }
-.modal-lg { max-width: 680px; }
-
+.modal-lg { max-width: 700px; }
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.25rem;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.1rem 1.5rem;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
-.modal-header h3 { margin-bottom: 0.2rem; }
-.modal-subtitle { font-size: 0.85rem; color: var(--color-gray-500); }
+.modal-header h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0; color: var(--color-gray-900); }
+.modal-subtitle { font-size: 0.82rem; color: var(--color-gray-500); margin-top: 0.15rem; }
 .modal-close {
+  width: 28px; height: 28px; border-radius: 6px;
   background: none; border: none; cursor: pointer;
-  font-size: 1.1rem; color: var(--color-gray-500);
-  padding: 0.1rem 0.3rem;
-  border-radius: 4px;
-  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-gray-500); font-size: 0.9rem; transition: all 0.15s;
 }
-.modal-close:hover { background: var(--color-gray-100); }
-
+.modal-close:hover { background: var(--color-gray-200); color: var(--color-gray-800); }
+.modal-body { padding: 1.5rem; }
 .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
 
 .versements-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: var(--color-gray-100);
-  border-radius: 8px;
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  color: var(--color-gray-700);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-success-light);
+  border-top: 1px solid #a7f3d0;
+  font-size: 0.9rem; font-weight: 500; color: #065f46;
+  border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 768px) {
+  .stats-bar { flex-direction: column; gap: 0; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--color-gray-200); width: 100%; }
+  .stat-item:last-child { border-bottom: none; }
 }
 </style>

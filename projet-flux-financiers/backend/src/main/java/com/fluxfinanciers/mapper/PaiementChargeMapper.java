@@ -13,7 +13,7 @@ public final class PaiementChargeMapper {
         PaiementCharge paiement = new PaiementCharge();
         paiement.setCharge(charge);
         paiement.setMontant(request.getMontant());
-        paiement.setDatePaiement(request.getDatePaiement());
+        paiement.setDate(request.getDate());
         paiement.setModePaiement(request.getModePaiement());
         paiement.setRemarque(request.getRemarque());
         return paiement;
@@ -23,9 +23,9 @@ public final class PaiementChargeMapper {
         PaiementChargeResponse response = new PaiementChargeResponse();
         response.setId(paiement.getId());
         response.setChargeId(paiement.getCharge().getId());
-        response.setChargeNom(paiement.getCharge().getNomCharge());
+        response.setChargeLibelle(paiement.getCharge().getLibelle());
         response.setMontant(paiement.getMontant());
-        response.setDatePaiement(paiement.getDatePaiement());
+        response.setDate(paiement.getDate());
         response.setModePaiement(paiement.getModePaiement());
         response.setRemarque(paiement.getRemarque());
         return response;

@@ -1,6 +1,6 @@
 package com.fluxfinanciers.enums;
 
-
-public enum RoleUser {
+public enum Role {
+    ADMIN,
     GESTIONNAIRE
 }

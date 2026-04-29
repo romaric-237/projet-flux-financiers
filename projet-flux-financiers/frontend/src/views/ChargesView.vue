@@ -68,15 +68,15 @@
           <tr v-for="charge in filteredCharges" :key="charge.id">
             <td>
               <div class="charge-cell">
-                <div class="type-icon" :style="{ background: typeMeta(charge.typeCharge).bg, color: typeMeta(charge.typeCharge).color }">
-                  <span>{{ typeMeta(charge.typeCharge).icon }}</span>
+                <div class="type-icon" :style="{ background: typeMeta(charge.categorie).bg, color: typeMeta(charge.categorie).color }">
+                  <span>{{ typeMeta(charge.categorie).icon }}</span>
                 </div>
-                <span class="charge-name">{{ charge.nomCharge }}</span>
+                <span class="charge-name">{{ charge.libelle }}</span>
               </div>
             </td>
             <td>
-              <span class="badge-type" :style="{ background: typeMeta(charge.typeCharge).bg, color: typeMeta(charge.typeCharge).color }">
-                {{ typeMeta(charge.typeCharge).label }}
+              <span class="badge-type" :style="{ background: typeMeta(charge.categorie).bg, color: typeMeta(charge.categorie).color }">
+                {{ typeMeta(charge.categorie).label }}
               </span>
             </td>
             <td>
@@ -109,16 +109,16 @@
         <form @submit.prevent="save">
           <div class="form-group">
             <label>Nom de la charge *</label>
-            <input v-model="form.nomCharge" type="text" :class="{ error: errors.nomCharge }" placeholder="Ex: Essence Ford" />
-            <span v-if="errors.nomCharge" class="error-message">{{ errors.nomCharge }}</span>
+            <input v-model="form.libelle" type="text" :class="{ error: errors.libelle }" placeholder="Ex: Essence Ford" />
+            <span v-if="errors.libelle" class="error-message">{{ errors.libelle }}</span>
           </div>
           <div class="form-group">
             <label>Type *</label>
-            <select v-model="form.typeCharge" :class="{ error: errors.typeCharge }">
+            <select v-model="form.categorie" :class="{ error: errors.categorie }">
               <option value="">-- Sélectionner --</option>
               <option v-for="t in TYPES" :key="t.value" :value="t.value">{{ t.label }}</option>
             </select>
-            <span v-if="errors.typeCharge" class="error-message">{{ errors.typeCharge }}</span>
+            <span v-if="errors.categorie" class="error-message">{{ errors.categorie }}</span>
           </div>
           <div class="modal-actions">
             <button type="submit" class="btn btn-primary" :disabled="saving">
@@ -135,14 +135,14 @@
       <div class="modal-card modal-lg">
         <div class="modal-header">
           <div class="d-flex align-center gap-2">
-            <div class="type-icon type-icon-lg" :style="{ background: typeMeta(selectedCharge?.typeCharge).bg, color: typeMeta(selectedCharge?.typeCharge).color }">
-              {{ typeMeta(selectedCharge?.typeCharge).icon }}
+            <div class="type-icon type-icon-lg" :style="{ background: typeMeta(selectedCharge?.categorie).bg, color: typeMeta(selectedCharge?.categorie).color }">
+              {{ typeMeta(selectedCharge?.categorie).icon }}
             </div>
             <div>
-              <h3>{{ selectedCharge?.nomCharge }}</h3>
+              <h3>{{ selectedCharge?.libelle }}</h3>
               <p class="modal-subtitle">
-                <span class="badge-type" :style="{ background: typeMeta(selectedCharge?.typeCharge).bg, color: typeMeta(selectedCharge?.typeCharge).color }">
-                  {{ typeMeta(selectedCharge?.typeCharge).label }}
+                <span class="badge-type" :style="{ background: typeMeta(selectedCharge?.categorie).bg, color: typeMeta(selectedCharge?.categorie).color }">
+                  {{ typeMeta(selectedCharge?.categorie).label }}
                 </span>
                 &nbsp;· {{ paiementsCharge.length }} paiement(s)
               </p>
@@ -162,7 +162,7 @@
           </thead>
           <tbody>
             <tr v-for="p in paiementsCharge" :key="p.id">
-              <td>{{ formatDate(p.datePaiement) }}</td>
+              <td>{{ formatDate(p.date) }}</td>
               <td class="montant-red font-bold">{{ formatMontant(p.montant) }}</td>
               <td>{{ formatMode(p.modePaiement) }}</td>
               <td class="text-muted-sm">{{ p.remarque || '-' }}</td>
@@ -205,7 +205,7 @@ const loading  = ref(false)
 const showForm = ref(false)
 const saving   = ref(false)
 const editingId = ref(null)
-const form     = ref({ nomCharge: '', typeCharge: '' })
+const form     = ref({ libelle: '', categorie: '' })
 const errors   = ref({})
 
 const showPaiements  = ref(false)
@@ -229,16 +229,16 @@ async function loadAll() {
 // ── Computed ──────────────────────────────────────
 const filteredCharges = computed(() => {
   let list = charges.value
-  if (filtreType.value) list = list.filter(c => c.typeCharge === filtreType.value)
+  if (filtreType.value) list = list.filter(c => c.categorie === filtreType.value)
   const q = search.value.trim().toLowerCase()
-  if (q) list = list.filter(c => c.nomCharge.toLowerCase().includes(q))
+  if (q) list = list.filter(c => c.libelle.toLowerCase().includes(q))
   return list
 })
 
 const totalPaiements = computed(() => paiements.value.reduce((s, p) => s + (p.montant || 0), 0))
 
 function countByType(type) {
-  return charges.value.filter(c => c.typeCharge === type).length
+  return charges.value.filter(c => c.categorie === type).length
 }
 function paiementsParCharge(chargeId) {
   return paiements.value.filter(p => p.chargeId === chargeId)
@@ -265,10 +265,10 @@ function openForm(charge = null) {
   errors.value = {}
   if (charge) {
     editingId.value = charge.id
-    form.value = { nomCharge: charge.nomCharge, typeCharge: charge.typeCharge }
+    form.value = { libelle: charge.libelle, categorie: charge.categorie }
   } else {
     editingId.value = null
-    form.value = { nomCharge: '', typeCharge: '' }
+    form.value = { libelle: '', categorie: '' }
   }
   showForm.value = true
 }
@@ -277,8 +277,8 @@ function closeForm() { showForm.value = false }
 
 function validate() {
   const e = {}
-  if (!form.value.nomCharge.trim()) e.nomCharge = 'Le nom est obligatoire'
-  if (!form.value.typeCharge)       e.typeCharge = 'Le type est obligatoire'
+  if (!form.value.libelle.trim()) e.libelle = 'Le nom est obligatoire'
+  if (!form.value.categorie)      e.categorie = 'Le type est obligatoire'
   errors.value = e
   return Object.keys(e).length === 0
 }
@@ -286,7 +286,7 @@ function validate() {
 async function save() {
   if (!validate()) return
   saving.value = true
-  const payload = { nomCharge: form.value.nomCharge, typeCharge: form.value.typeCharge, createdById: authStore.currentUser?.id }
+  const payload = { libelle: form.value.libelle, categorie: form.value.categorie, createdById: authStore.currentUser?.id }
   try {
     if (editingId.value) {
       await api.put(`/charges/${editingId.value}`, payload)
@@ -324,7 +324,7 @@ function formatDate(dt) {
   return new Date(dt).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 function formatMode(mode) {
-  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE_BANCAIRE: 'Carte bancaire' }
+  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE: 'Carte bancaire' }
   return labels[mode] || mode || '-'
 }
 </script>

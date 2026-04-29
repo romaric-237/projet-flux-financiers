@@ -19,6 +19,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         com.fluxfinanciers.entity.User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + username));
 
+        if (!user.isActif()) {
+            throw new UsernameNotFoundException("Compte désactivé : " + username);
+        }
+
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())

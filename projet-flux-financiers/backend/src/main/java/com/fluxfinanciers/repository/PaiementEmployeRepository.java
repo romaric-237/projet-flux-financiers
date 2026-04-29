@@ -7,5 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PaiementEmployeRepository extends JpaRepository<PaiementEmploye, Long> {
-    List<PaiementEmploye> findByDatePaiementBetween(LocalDate dateDebut, LocalDate dateFin);
+    List<PaiementEmploye> findByDateBetween(LocalDate dateDebut, LocalDate dateFin);
+    boolean existsByEmployeId(Long employeId);
 }

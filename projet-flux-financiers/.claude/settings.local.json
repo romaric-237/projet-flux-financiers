@@ -9,7 +9,16 @@
       "Bash(tasklist:*)",
       "Bash(powershell -Command:*)",
       "Bash(docker-compose down:*)",
-      "Bash(docker-compose build:*)"
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(export JAVA_HOME=\"/c/Dev/Java/jdk-21\")",
+      "Bash(mvn compile:*)",
+      "Bash(export JAVA_HOME=\"/c/Dev/ms-21.0.10\")",
+      "Bash(java -version)",
+      "Bash(export JAVA_HOME=\"C:/Program Files/Java/jdk-22\")",
+      "Read(//c/Program Files/Java/**)",
+      "Bash(export JAVA_HOME=\"C:/Program Files/Java/jdk-23\")",
+      "Bash(/c/Dev/apache-maven-3.9.7/bin/mvn compile:*)"
     ]
   }
 }

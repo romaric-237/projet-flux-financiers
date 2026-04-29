@@ -1,7 +1,7 @@
 package com.fluxfinanciers.dto.response;
 
 import com.fluxfinanciers.enums.ModePaiement;
-import com.fluxfinanciers.enums.TypePaiementEmploye;
+import com.fluxfinanciers.enums.TypePaiement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,9 +17,9 @@ public class PaiementEmployeResponse {
     private Long id;
     private Long employeId;
     private String employeNom;
-    private TypePaiementEmploye typePaiement;
+    private TypePaiement type;
     private ModePaiement modePaiement;
     private BigDecimal montant;
-    private LocalDate datePaiement;
+    private LocalDate date;
     private String remarque;
 }

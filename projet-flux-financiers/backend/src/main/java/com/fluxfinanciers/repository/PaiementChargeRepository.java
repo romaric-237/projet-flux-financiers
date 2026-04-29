@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PaiementChargeRepository extends JpaRepository<PaiementCharge, Long> {
-    List<PaiementCharge> findByDatePaiementBetween(LocalDate dateDebut, LocalDate dateFin);
+    List<PaiementCharge> findByDateBetween(LocalDate dateDebut, LocalDate dateFin);
 }

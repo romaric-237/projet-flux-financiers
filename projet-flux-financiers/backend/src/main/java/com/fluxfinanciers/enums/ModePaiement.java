@@ -1,8 +1,9 @@
 package com.fluxfinanciers.enums;
 
 public enum ModePaiement {
-    ESPECES,
     VIREMENT,
+    ESPECES,
     CHEQUE,
-    CARTE_BANCAIRE
+    CARTE
 }
+

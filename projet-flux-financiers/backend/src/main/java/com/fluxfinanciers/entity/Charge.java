@@ -1,6 +1,6 @@
 package com.fluxfinanciers.entity;
 
-import com.fluxfinanciers.enums.TypeCharge;
+import com.fluxfinanciers.enums.CategorieCharge;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,13 +11,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Entité Charge - Référentiel des charges
- */
 @Entity
 @Table(name = "charge")
 @EntityListeners(AuditingEntityListener.class)
@@ -30,15 +28,15 @@ public class Charge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Le nom de la charge est obligatoire")
-    @Size(max = 200, message = "Le nom ne peut pas dépasser 200 caractères")
+    @NotBlank(message = "Le libellé de la charge est obligatoire")
+    @Size(max = 200)
     @Column(name = "nom_charge", nullable = false, length = 200)
-    private String nomCharge;
+    private String libelle;
 
-    @NotNull(message = "Le type de charge est obligatoire")
+    @NotNull(message = "La catégorie de charge est obligatoire")
     @Enumerated(EnumType.STRING)
     @Column(name = "type_charge", nullable = false)
-    private TypeCharge typeCharge;
+    private CategorieCharge categorie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
@@ -48,7 +46,12 @@ public class Charge {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Relation OneToMany avec PaiementCharge
-    @OneToMany(mappedBy = "charge", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "charge")
     private List<PaiementCharge> paiements = new ArrayList<>();
+
+    public BigDecimal getTotalPaiements() {
+        return paiements.stream()
+                .map(PaiementCharge::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

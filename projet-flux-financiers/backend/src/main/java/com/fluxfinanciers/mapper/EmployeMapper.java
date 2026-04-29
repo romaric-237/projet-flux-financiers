@@ -14,6 +14,7 @@ public final class EmployeMapper {
         Employe employe = new Employe();
         employe.setNom(request.getNom());
         employe.setPrenom(request.getPrenom());
+        employe.setEmail(request.getEmail());
         employe.setStatut(request.getStatut() != null ? request.getStatut() : StatutEmploye.ACTIF);
         employe.setCreatedBy(createdBy);
         return employe;
@@ -24,10 +25,13 @@ public final class EmployeMapper {
         response.setId(employe.getId());
         response.setNom(employe.getNom());
         response.setPrenom(employe.getPrenom());
+        response.setEmail(employe.getEmail());
         response.setStatut(employe.getStatut());
-        response.setCreatedAt(employe.getCreatedAt());
-        response.setCreatedById(employe.getCreatedBy().getId());
-        response.setCreatedByUsername(employe.getCreatedBy().getUsername());
+        response.setDateCreation(employe.getDateCreation());
+        if (employe.getCreatedBy() != null) {
+            response.setCreatedById(employe.getCreatedBy().getId());
+            response.setCreatedByUsername(employe.getCreatedBy().getUsername());
+        }
         return response;
     }
 }

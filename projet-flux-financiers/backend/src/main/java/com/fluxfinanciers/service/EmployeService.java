@@ -3,9 +3,11 @@ package com.fluxfinanciers.service;
 import com.fluxfinanciers.dto.request.EmployeRequest;
 import com.fluxfinanciers.entity.Employe;
 import com.fluxfinanciers.entity.User;
+import com.fluxfinanciers.enums.ActionAudit;
 import com.fluxfinanciers.exception.ResourceNotFoundException;
 import com.fluxfinanciers.mapper.EmployeMapper;
 import com.fluxfinanciers.repository.EmployeRepository;
+import com.fluxfinanciers.repository.PaiementEmployeRepository;
 import com.fluxfinanciers.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class EmployeService {
 
     private final EmployeRepository employeRepository;
     private final UserRepository userRepository;
+    private final PaiementEmployeRepository paiementEmployeRepository;
+    private final AuditLogService auditLogService;
 
     public List<Employe> findAll() {
         return employeRepository.findAll();
@@ -35,7 +39,9 @@ public class EmployeService {
         User createdBy = userRepository.findById(request.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedById()));
         Employe employe = EmployeMapper.toEntity(request, createdBy);
-        return employeRepository.save(employe);
+        Employe saved = employeRepository.save(employe);
+        auditLogService.log(ActionAudit.CREATION, "Employe", saved.getId(), "Employé créé: " + saved.getFullName());
+        return saved;
     }
 
     @Transactional
@@ -43,13 +49,20 @@ public class EmployeService {
         Employe existing = findById(id);
         existing.setNom(request.getNom());
         existing.setPrenom(request.getPrenom());
+        existing.setEmail(request.getEmail());
         existing.setStatut(request.getStatut());
-        return employeRepository.save(existing);
+        Employe saved = employeRepository.save(existing);
+        auditLogService.log(ActionAudit.MODIFICATION, "Employe", id, "Employé modifié: " + saved.getFullName());
+        return saved;
     }
 
     @Transactional
     public void delete(Long id) {
         Employe existing = findById(id);
+        if (paiementEmployeRepository.existsByEmployeId(id)) {
+            throw new IllegalStateException("Impossible de supprimer un employé ayant des paiements. Passez-le en INACTIF.");
+        }
         employeRepository.delete(existing);
+        auditLogService.log(ActionAudit.SUPPRESSION, "Employe", id, "Employé supprimé: " + existing.getFullName());
     }
 }

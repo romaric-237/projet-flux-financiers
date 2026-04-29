@@ -22,8 +22,8 @@
         <tbody>
           <tr v-for="v in versements" :key="v.id">
             <td>{{ v.clientNom }}</td>
-            <td>{{ formatMontant(v.montantTTC) }}</td>
-            <td>{{ v.dateVersement }}</td>
+            <td>{{ formatMontant(v.montant) }}</td>
+            <td>{{ v.date }}</td>
             <td>{{ formatMode(v.modePaiement) }}</td>
             <td>{{ v.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -50,23 +50,24 @@
           </div>
           <div class="form-group">
             <label>Montant TTC (€) *</label>
-            <input v-model="form.montantTTC" type="number" step="0.01" min="0.01" :class="{ error: errors.montantTTC }" />
-            <span v-if="errors.montantTTC" class="error-message">{{ errors.montantTTC }}</span>
+            <input v-model="form.montant" type="number" step="0.01" min="0.01" :class="{ error: errors.montant }" />
+            <span v-if="errors.montant" class="error-message">{{ errors.montant }}</span>
           </div>
           <div class="form-group">
             <label>Date de versement *</label>
-            <input v-model="form.dateVersement" type="date" :class="{ error: errors.dateVersement }" />
-            <span v-if="errors.dateVersement" class="error-message">{{ errors.dateVersement }}</span>
+            <input v-model="form.date" type="date" :class="{ error: errors.date }" />
+            <span v-if="errors.date" class="error-message">{{ errors.date }}</span>
           </div>
           <div class="form-group">
-            <label>Mode de paiement</label>
-            <select v-model="form.modePaiement">
+            <label>Mode de paiement *</label>
+            <select v-model="form.modePaiement" :class="{ error: errors.modePaiement }">
               <option value="">-- Sélectionner --</option>
               <option value="ESPECES">Espèces</option>
               <option value="VIREMENT">Virement</option>
               <option value="CHEQUE">Chèque</option>
-              <option value="CARTE_BANCAIRE">Carte bancaire</option>
+              <option value="CARTE">Carte bancaire</option>
             </select>
+            <span v-if="errors.modePaiement" class="error-message">{{ errors.modePaiement }}</span>
           </div>
           <div class="form-group">
             <label>Remarque</label>
@@ -86,10 +87,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const route = useRoute()
 
 const versements = ref([])
 const clients = ref([])
@@ -97,11 +100,12 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editingId = ref(null)
-const form = ref({ clientId: '', montantTTC: '', dateVersement: '', modePaiement: '', remarque: '' })
+const form = ref({ clientId: '', montant: '', date: '', modePaiement: '', remarque: '' })
 const errors = ref({})
 
 onMounted(async () => {
   await Promise.all([loadVersements(), loadClients()])
+  if (route.query.action === 'new') openForm()
 })
 
 async function loadVersements() {
@@ -131,14 +135,14 @@ function openForm(v = null) {
     editingId.value = v.id
     form.value = {
       clientId: v.clientId,
-      montantTTC: v.montantTTC,
-      dateVersement: v.dateVersement,
+      montant: v.montant,
+      date: v.date,
       modePaiement: v.modePaiement || '',
       remarque: v.remarque || ''
     }
   } else {
     editingId.value = null
-    form.value = { clientId: '', montantTTC: '', dateVersement: '', modePaiement: '', remarque: '' }
+    form.value = { clientId: '', montant: '', date: '', modePaiement: '', remarque: '' }
   }
   showForm.value = true
 }
@@ -150,8 +154,13 @@ function closeForm() {
 function validate() {
   const e = {}
   if (!form.value.clientId) e.clientId = 'Le client est obligatoire'
-  if (!form.value.montantTTC || form.value.montantTTC <= 0) e.montantTTC = 'Le montant doit être supérieur à 0'
-  if (!form.value.dateVersement) e.dateVersement = 'La date est obligatoire'
+  if (!form.value.montant || form.value.montant <= 0) e.montant = 'Le montant doit être supérieur à 0'
+  if (!form.value.modePaiement) e.modePaiement = 'Le mode de paiement est obligatoire'
+  if (!form.value.date) {
+    e.date = 'La date est obligatoire'
+  } else if (form.value.date > new Date().toISOString().split('T')[0]) {
+    e.date = 'La date ne peut pas être dans le futur'
+  }
   errors.value = e
   return Object.keys(e).length === 0
 }
@@ -161,8 +170,8 @@ async function save() {
   saving.value = true
   const payload = {
     clientId: form.value.clientId,
-    montantTTC: form.value.montantTTC,
-    dateVersement: form.value.dateVersement,
+    montant: parseFloat(form.value.montant),
+    date: form.value.date,
     modePaiement: form.value.modePaiement || null,
     remarque: form.value.remarque || null
   }
@@ -177,7 +186,14 @@ async function save() {
     closeForm()
     await loadVersements()
   } catch (err) {
-    toast.error(err.response?.data?.message || 'Erreur lors de l\'enregistrement')
+    console.error('Erreur versement:', err.response?.data)
+    const data = err.response?.data
+    if (data?.errors) {
+      const details = Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join(' | ')
+      toast.error(details)
+    } else {
+      toast.error(data?.message || 'Erreur lors de l\'enregistrement')
+    }
   } finally {
     saving.value = false
   }
@@ -205,23 +221,30 @@ function formatMode(mode) {
 </script>
 
 <style scoped>
+.container { max-width: 1100px; margin: 0 auto; }
+
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 1rem; animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: white; border-radius: var(--border-radius-xl);
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
+}
+.modal-card h3 {
+  font-size: 1rem; font-weight: 600; margin: 0;
+  padding: 1.1rem 1.5rem;
+  background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+}
+form { padding: 1.5rem; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 </style>

@@ -24,12 +24,12 @@
           <tr v-for="p in paiements" :key="p.id">
             <td>{{ p.employeNom }}</td>
             <td>
-              <span :class="p.typePaiement === 'SALAIRE' ? 'badge badge-success' : 'badge badge-secondary'">
-                {{ p.typePaiement }}
+              <span :class="p.type === 'SALAIRE' ? 'badge badge-success' : 'badge badge-secondary'">
+                {{ p.type === 'SALAIRE' ? 'Salaire' : p.type === 'PRIME' ? 'Prime' : p.type }}
               </span>
             </td>
             <td>{{ formatMontant(p.montant) }}</td>
-            <td>{{ p.datePaiement }}</td>
+            <td>{{ p.date }}</td>
             <td>{{ formatMode(p.modePaiement) }}</td>
             <td>{{ p.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -50,7 +50,7 @@
             <label>Employé *</label>
             <select v-model="form.employeId" :class="{ error: errors.employeId }">
               <option value="">-- Sélectionner un employé --</option>
-              <option v-for="e in employes" :key="e.id" :value="e.id">{{ e.nom }} {{ e.prenom }}</option>
+              <option v-for="e in employes.filter(e => e.statut === 'ACTIF')" :key="e.id" :value="e.id">{{ e.nom }} {{ e.prenom }}</option>
             </select>
             <span v-if="errors.employeId" class="error-message">{{ errors.employeId }}</span>
           </div>
@@ -70,7 +70,7 @@
               <option value="ESPECES">Espèces</option>
               <option value="VIREMENT">Virement</option>
               <option value="CHEQUE">Chèque</option>
-              <option value="CARTE_BANCAIRE">Carte bancaire</option>
+              <option value="CARTE">Carte bancaire</option>
             </select>
             <span v-if="errors.modePaiement" class="error-message">{{ errors.modePaiement }}</span>
           </div>
@@ -102,10 +102,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const route = useRoute()
 
 const paiements = ref([])
 const employes = ref([])
@@ -118,6 +120,7 @@ const errors = ref({})
 
 onMounted(async () => {
   await Promise.all([loadPaiements(), loadEmployes()])
+  if (route.query.action === 'new') openForm()
 })
 
 async function loadPaiements() {
@@ -147,10 +150,10 @@ function openForm(p = null) {
     editingId.value = p.id
     form.value = {
       employeId: p.employeId,
-      typePaiement: p.typePaiement || '',
+      typePaiement: p.type || '',
       modePaiement: p.modePaiement || '',
       montant: p.montant,
-      datePaiement: p.datePaiement,
+      datePaiement: p.date,
       remarque: p.remarque || ''
     }
   } else {
@@ -170,7 +173,11 @@ function validate() {
   if (!form.value.typePaiement) e.typePaiement = 'Le type de paiement est obligatoire'
   if (!form.value.modePaiement) e.modePaiement = 'Le mode de paiement est obligatoire'
   if (!form.value.montant || form.value.montant <= 0) e.montant = 'Le montant doit être supérieur à 0'
-  if (!form.value.datePaiement) e.datePaiement = 'La date est obligatoire'
+  if (!form.value.datePaiement) {
+    e.datePaiement = 'La date est obligatoire'
+  } else if (form.value.datePaiement > new Date().toISOString().split('T')[0]) {
+    e.datePaiement = 'La date ne peut pas être dans le futur'
+  }
   errors.value = e
   return Object.keys(e).length === 0
 }
@@ -180,10 +187,10 @@ async function save() {
   saving.value = true
   const payload = {
     employeId: form.value.employeId,
-    typePaiement: form.value.typePaiement,
+    type: form.value.typePaiement,
     modePaiement: form.value.modePaiement,
-    montant: form.value.montant,
-    datePaiement: form.value.datePaiement,
+    montant: parseFloat(form.value.montant),
+    date: form.value.datePaiement,
     remarque: form.value.remarque || null
   }
   try {
@@ -219,29 +226,36 @@ function formatMontant(m) {
 }
 
 function formatMode(mode) {
-  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE_BANCAIRE: 'Carte bancaire' }
+  const labels = { ESPECES: 'Espèces', VIREMENT: 'Virement', CHEQUE: 'Chèque', CARTE: 'Carte bancaire' }
   return labels[mode] || mode || '-'
 }
 </script>
 
 <style scoped>
+.container { max-width: 1100px; margin: 0 auto; }
+
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 1rem; animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: white; border-radius: var(--border-radius-xl);
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
+}
+.modal-card h3 {
+  font-size: 1rem; font-weight: 600; margin: 0;
+  padding: 1.1rem 1.5rem;
+  background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+}
+form { padding: 1.5rem; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 </style>

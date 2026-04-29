@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +15,9 @@ public class EmployeResponse {
     private Long id;
     private String nom;
     private String prenom;
+    private String email;
     private StatutEmploye statut;
-    private LocalDateTime createdAt;
+    private LocalDate dateCreation;
     private Long createdById;
     private String createdByUsername;
 }

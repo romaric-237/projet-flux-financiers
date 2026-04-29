@@ -1,6 +1,6 @@
 package com.fluxfinanciers.dto.response;
 
-import com.fluxfinanciers.enums.TypeCharge;
+import com.fluxfinanciers.enums.CategorieCharge;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class ChargeResponse {
 
     private Long id;
-    private String nomCharge;
-    private TypeCharge typeCharge;
+    private String libelle;
+    private CategorieCharge categorie;
     private LocalDateTime createdAt;
     private Long createdById;
     private String createdByUsername;

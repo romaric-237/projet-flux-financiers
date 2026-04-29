@@ -1,9 +1,10 @@
 package com.fluxfinanciers.dto.request;
 
 import com.fluxfinanciers.enums.ModePaiement;
-import com.fluxfinanciers.enums.TypePaiementEmploye;
+import com.fluxfinanciers.enums.TypePaiement;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class PaiementEmployeRequest {
     private Long employeId;
 
     @NotNull(message = "Le type de paiement est obligatoire")
-    private TypePaiementEmploye typePaiement;
+    private TypePaiement type;
 
     @NotNull(message = "Le mode de paiement est obligatoire")
     private ModePaiement modePaiement;
@@ -31,8 +32,9 @@ public class PaiementEmployeRequest {
     private BigDecimal montant;
 
     @NotNull(message = "La date de paiement est obligatoire")
-    private LocalDate datePaiement;
+    @PastOrPresent(message = "La date ne peut pas être dans le futur")
+    private LocalDate date;
 
-    @Size(max = 500, message = "La remarque ne peut pas dépasser 500 caractères")
+    @Size(max = 500)
     private String remarque;
 }
