@@ -21,9 +21,9 @@
         </thead>
         <tbody>
           <tr v-for="p in paiements" :key="p.id">
-            <td>{{ p.chargeLibelle }}</td>
+            <td>{{ p.chargeNom }}</td>
             <td>{{ formatMontant(p.montant) }}</td>
-            <td>{{ p.date }}</td>
+            <td>{{ p.datePaiement }}</td>
             <td>{{ formatMode(p.modePaiement) }}</td>
             <td>{{ p.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -136,7 +136,7 @@ function openForm(p = null) {
     form.value = {
       chargeId: p.chargeId,
       montant: p.montant,
-      datePaiement: p.date,
+      datePaiement: p.datePaiement,
       modePaiement: p.modePaiement || '',
       remarque: p.remarque || ''
     }

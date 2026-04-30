@@ -29,7 +29,7 @@
               </span>
             </td>
             <td>{{ formatMontant(p.montant) }}</td>
-            <td>{{ p.date }}</td>
+            <td>{{ p.datePaiement }}</td>
             <td>{{ formatMode(p.modePaiement) }}</td>
             <td>{{ p.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -153,7 +153,7 @@ function openForm(p = null) {
       typePaiement: p.type || '',
       modePaiement: p.modePaiement || '',
       montant: p.montant,
-      datePaiement: p.date,
+      datePaiement: p.datePaiement,
       remarque: p.remarque || ''
     }
   } else {

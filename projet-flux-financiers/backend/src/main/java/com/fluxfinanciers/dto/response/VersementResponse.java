@@ -16,8 +16,8 @@ public class VersementResponse {
     private Long id;
     private Long clientId;
     private String clientNom;
-    private BigDecimal montant;
-    private LocalDate date;
+    private BigDecimal montantTTC;
+    private LocalDate dateVersement;
     private ModePaiement modePaiement;
     private String remarque;
 }

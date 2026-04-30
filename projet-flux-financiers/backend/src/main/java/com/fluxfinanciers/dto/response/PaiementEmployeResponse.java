@@ -20,6 +20,6 @@ public class PaiementEmployeResponse {
     private TypePaiement type;
     private ModePaiement modePaiement;
     private BigDecimal montant;
-    private LocalDate date;
+    private LocalDate datePaiement;
     private String remarque;
 }

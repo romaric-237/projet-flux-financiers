@@ -24,8 +24,8 @@ public final class VersementMapper {
         response.setId(versement.getId());
         response.setClientId(versement.getClient().getId());
         response.setClientNom(versement.getClient().getFullName());
-        response.setMontant(versement.getMontant());
-        response.setDate(versement.getDate());
+        response.setMontantTTC(versement.getMontant());
+        response.setDateVersement(versement.getDate());
         response.setModePaiement(versement.getModePaiement());
         response.setRemarque(versement.getRemarque());
         return response;

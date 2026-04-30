@@ -128,6 +128,21 @@
       </div>
     </div>
 
+    <!-- Alertes seuils budgétaires -->
+    <div v-if="alertesSeuils.length" class="alertes-section">
+      <div v-for="a in alertesSeuils" :key="a.categorie"
+        :class="['alerte-banner', a.niveau === 'over' ? 'alerte-red' : 'alerte-orange']">
+        <span class="alerte-icon">{{ a.niveau === 'over' ? '🔴' : '🟠' }}</span>
+        <div class="alerte-text">
+          <strong>{{ a.label }}</strong> —
+          {{ formatMontant(a.depense) }} dépensé sur {{ formatMontant(a.plafond) }} ({{ a.pct }}%)
+          <span v-if="a.niveau === 'over'"> · Plafond dépassé</span>
+          <span v-else> · Proche du plafond</span>
+        </div>
+        <router-link to="/budget" class="alerte-link">Voir →</router-link>
+      </div>
+    </div>
+
     <!-- Graphiques -->
     <div class="charts-grid">
       <!-- Donut : répartition dépenses Personnel vs Charges -->
@@ -239,6 +254,15 @@ const kpi = ref({
 const rawVersements    = ref([])
 const rawPaiementsChar = ref([])
 const rawPaiementsEmpl = ref([])
+const rawSeuils        = ref([])
+const rawCharges       = ref([])
+
+const CATEGORIES_LABELS = {
+  VEHICULES:         'Véhicules',
+  INFRASTRUCTURE:    'Infrastructure',
+  FISCALES_SOCIALES: 'Fiscales & Sociales',
+  SERVICES_EXTERNES: 'Services Externes',
+}
 
 const dateAujourdhui = new Date().toLocaleDateString('fr-BE', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -267,6 +291,32 @@ const transactionsFiltrees = computed(() => {
     list = list.filter(t => new Date(t.date) >= debut)
   }
   return list.slice(0, 10)
+})
+
+// ── Alertes seuils ──────────────────────────────────────
+const alertesSeuils = computed(() => {
+  if (!rawSeuils.value.length || !rawCharges.value.length) return []
+  const now2 = new Date()
+  const moisKey = `${now2.getFullYear()}-${String(now2.getMonth() + 1).padStart(2, '0')}`
+  const chargeMap = {}
+  rawCharges.value.forEach(c => { chargeMap[c.id] = c.categorie })
+
+  const depenseParCat = {}
+  rawPaiementsChar.value.forEach(p => {
+    if (p.datePaiement?.startsWith(moisKey)) {
+      const cat = chargeMap[p.chargeId]
+      if (cat) depenseParCat[cat] = (depenseParCat[cat] || 0) + (Number(p.montant) || 0)
+    }
+  })
+
+  return rawSeuils.value
+    .map(s => {
+      const dep = depenseParCat[s.categorie] || 0
+      const pct = s.plafond > 0 ? Math.round((dep / Number(s.plafond)) * 100) : 0
+      return { categorie: s.categorie, label: CATEGORIES_LABELS[s.categorie] || s.categorie, depense: dep, plafond: Number(s.plafond), pct, niveau: pct >= 100 ? 'over' : pct >= 80 ? 'warn' : null }
+    })
+    .filter(a => a.niveau !== null)
+    .sort((a, b) => b.pct - a.pct)
 })
 
 // ── Donut : Personnel vs Charges ────────────────────────
@@ -389,15 +439,19 @@ onMounted(loadData)
 async function loadData() {
   loading.value = true
   try {
-    const [v, pc, pe] = await Promise.all([
+    const [v, pc, pe, seuils, ch] = await Promise.all([
       api.get('/versements'),
       api.get('/paiement-charges'),
-      api.get('/paiement-employes')
+      api.get('/paiement-employes'),
+      api.get('/seuils-budget'),
+      api.get('/charges'),
     ])
 
     rawVersements.value    = v.data
     rawPaiementsChar.value = pc.data
     rawPaiementsEmpl.value = pe.data
+    rawSeuils.value        = seuils.data
+    rawCharges.value       = ch.data
 
     const totalRecettes  = v.data.reduce((s, x) => s + (x.montantTTC || 0), 0)
     const totalCharges   = pc.data.reduce((s, x) => s + (x.montant || 0), 0)
@@ -553,6 +607,19 @@ function formatMode(mode) {
 .text-success { color: var(--color-success) !important; }
 .text-danger  { color: var(--color-danger)  !important; }
 .text-muted-sm { color: var(--color-gray-400); font-size: 1rem; }
+
+/* ── Alertes seuils ── */
+.alertes-section { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+.alerte-banner {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1.1rem; border-radius: 10px; border-left: 4px solid;
+  font-size: 0.875rem;
+}
+.alerte-red    { background: #fef2f2; border-color: var(--color-danger); color: #7f1d1d; }
+.alerte-orange { background: #fff7ed; border-color: #f59e0b; color: #78350f; }
+.alerte-icon   { font-size: 1rem; flex-shrink: 0; }
+.alerte-text   { flex: 1; }
+.alerte-link   { font-size: 0.82rem; font-weight: 600; color: inherit; text-decoration: underline; white-space: nowrap; }
 
 /* ── Graphiques ── */
 .charts-grid {

@@ -15,9 +15,9 @@ public class PaiementChargeResponse {
 
     private Long id;
     private Long chargeId;
-    private String chargeLibelle;
+    private String chargeNom;
     private BigDecimal montant;
-    private LocalDate date;
+    private LocalDate datePaiement;
     private ModePaiement modePaiement;
     private String remarque;
 }

@@ -23,9 +23,9 @@ public final class PaiementChargeMapper {
         PaiementChargeResponse response = new PaiementChargeResponse();
         response.setId(paiement.getId());
         response.setChargeId(paiement.getCharge().getId());
-        response.setChargeLibelle(paiement.getCharge().getLibelle());
+        response.setChargeNom(paiement.getCharge().getLibelle());
         response.setMontant(paiement.getMontant());
-        response.setDate(paiement.getDate());
+        response.setDatePaiement(paiement.getDate());
         response.setModePaiement(paiement.getModePaiement());
         response.setRemarque(paiement.getRemarque());
         return response;

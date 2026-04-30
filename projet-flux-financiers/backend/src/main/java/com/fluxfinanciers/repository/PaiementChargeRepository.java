@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface PaiementChargeRepository extends JpaRepository<PaiementCharge, Long> {
     List<PaiementCharge> findByDateBetween(LocalDate dateDebut, LocalDate dateFin);
+    boolean existsByCharge_IdAndDateBetween(Long chargeId, LocalDate dateDebut, LocalDate dateFin);
 }

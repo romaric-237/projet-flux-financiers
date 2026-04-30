@@ -70,13 +70,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 // Gestion des utilisateurs — ADMIN uniquement
+                .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/desactiver").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/reactiver").hasRole("ADMIN")
                 // Journal d'audit — tous les authentifiés (filtré par rôle dans le service)
                 .requestMatchers("/api/audit/**").authenticated()
-                // Changement de mot de passe — tous les authentifiés
+                // Changement de mot de passe et profil — tous les authentifiés
                 .requestMatchers("/api/users/changer-mot-de-passe").authenticated()
                 .requestMatchers("/api/users/me").authenticated()
                 // Budgets, charges récurrentes, seuils — ADMIN uniquement pour création/modification/suppression

@@ -22,8 +22,8 @@
         <tbody>
           <tr v-for="v in versements" :key="v.id">
             <td>{{ v.clientNom }}</td>
-            <td>{{ formatMontant(v.montant) }}</td>
-            <td>{{ v.date }}</td>
+            <td>{{ formatMontant(v.montantTTC) }}</td>
+            <td>{{ v.dateVersement }}</td>
             <td>{{ formatMode(v.modePaiement) }}</td>
             <td>{{ v.remarque || '-' }}</td>
             <td class="d-flex gap-1">
@@ -135,8 +135,8 @@ function openForm(v = null) {
     editingId.value = v.id
     form.value = {
       clientId: v.clientId,
-      montant: v.montant,
-      date: v.date,
+      montant: v.montantTTC,
+      date: v.dateVersement,
       modePaiement: v.modePaiement || '',
       remarque: v.remarque || ''
     }

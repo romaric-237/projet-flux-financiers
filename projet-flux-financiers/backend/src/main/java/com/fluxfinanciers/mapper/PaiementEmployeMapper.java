@@ -28,7 +28,7 @@ public final class PaiementEmployeMapper {
         response.setType(paiement.getType());
         response.setModePaiement(paiement.getModePaiement());
         response.setMontant(paiement.getMontant());
-        response.setDate(paiement.getDate());
+        response.setDatePaiement(paiement.getDate());
         response.setRemarque(paiement.getRemarque());
         return response;
     }
