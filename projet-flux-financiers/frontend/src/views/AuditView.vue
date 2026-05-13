@@ -230,8 +230,8 @@ function avatarColor(nom) {
 /* ── Stats bar ── */
 .stats-bar {
   display: flex; align-items: center;
-  background: white; border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm); border: 1px solid var(--color-gray-200);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
   margin-bottom: 1.25rem; overflow: hidden;
 }
 .stat-item {
@@ -265,8 +265,8 @@ function avatarColor(nom) {
 }
 .search-input {
   width: 100%; padding: 0.55rem 2.2rem 0.55rem 2.3rem;
-  border: 1px solid var(--color-gray-300); border-radius: var(--border-radius);
-  font-size: 0.9rem; background: white;
+  border: 1px solid var(--border); border-radius: var(--border-radius);
+  font-size: 0.9rem; background: var(--surface-1); color: var(--text-primary);
 }
 .search-input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .search-clear {
@@ -274,9 +274,9 @@ function avatarColor(nom) {
   background: none; border: none; cursor: pointer; color: var(--color-gray-400); font-size: 0.8rem;
 }
 .filter-select {
-  padding: 0.55rem 0.85rem; border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius); font-size: 0.85rem; background: white;
-  color: var(--color-gray-700); cursor: pointer;
+  padding: 0.55rem 0.85rem; border: 1px solid var(--border);
+  border-radius: var(--border-radius); font-size: 0.85rem; background: var(--surface-1);
+  color: var(--text-primary); cursor: pointer;
 }
 .filter-select:focus { outline: none; border-color: var(--color-primary); }
 .search-count { font-size: 0.82rem; color: var(--color-gray-500); white-space: nowrap; margin-left: auto; }
@@ -302,9 +302,9 @@ function avatarColor(nom) {
   display: inline-block; padding: 0.22rem 0.65rem;
   border-radius: 20px; font-size: 0.75rem; font-weight: 600; white-space: nowrap;
 }
-.action-create { background: var(--color-success-light); color: #065f46; }
-.action-update { background: #fff7ed; color: #92400e; }
-.action-delete { background: var(--color-danger-light); color: #991b1b; }
+.action-create { background: var(--color-success-light); color: var(--color-success); }
+.action-update { background: var(--color-warning-light); color: var(--color-warning); }
+.action-delete { background: var(--color-danger-light);  color: var(--color-danger); }
 
 /* Badge entité */
 .badge-entite {

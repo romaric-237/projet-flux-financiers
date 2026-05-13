@@ -346,7 +346,8 @@ function formatMode(mode) {
 /* ── Stats bar ── */
 .stats-bar {
   display: flex; align-items: center; gap: 1.5rem;
-  background: white; border-radius: 12px; padding: 1rem 1.5rem;
+  background: var(--surface-1); border-radius: 12px; padding: 1rem 1.5rem;
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; flex-wrap: wrap;
 }
 .stat-item { display: flex; flex-direction: column; }
@@ -365,8 +366,9 @@ function formatMode(mode) {
 }
 .search-input {
   width: 100%; padding: 0.5rem 2.5rem 0.5rem 2.25rem;
-  border: 1px solid var(--color-gray-300); border-radius: 8px;
-  font-size: 0.95rem; background: white; transition: border-color 0.2s;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.95rem; background: var(--surface-1); color: var(--text-primary);
+  transition: border-color 0.2s;
 }
 .search-input:focus { outline: none; border-color: var(--color-primary); }
 .search-clear {
@@ -375,9 +377,9 @@ function formatMode(mode) {
 }
 .filter-group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .filter-btn {
-  padding: 0.35rem 0.85rem; border: 1px solid var(--color-gray-300);
-  border-radius: 20px; background: white; font-size: 0.82rem;
-  cursor: pointer; transition: all 0.15s; color: var(--color-gray-700);
+  padding: 0.35rem 0.85rem; border: 1px solid var(--border);
+  border-radius: 20px; background: var(--surface-2); font-size: 0.82rem;
+  cursor: pointer; transition: all 0.15s; color: var(--text-secondary);
 }
 .filter-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .filter-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
@@ -416,9 +418,10 @@ function formatMode(mode) {
   z-index: 2000; padding: 1rem;
 }
 .modal-card {
-  background: white; border-radius: 12px; padding: 1.5rem;
+  background: var(--surface-2); border: 1px solid var(--border-bright);
+  border-radius: 12px; padding: 1.5rem;
   width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-xl);
 }
 .modal-lg { max-width: 680px; }
 .modal-header {

@@ -20,14 +20,14 @@
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-icon green">✨</div>
+        <div class="stat-icon green"></div>
         <div class="stat-text">
           <span class="stat-value">{{ clientsCeMois }}</span>
           <span class="stat-label">Nouveaux ce mois</span>
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-icon purple">💰</div>
+        <div class="stat-icon purple"></div>
         <div class="stat-text">
           <span class="stat-value">{{ formatMontant(totalVersements) }}</span>
           <span class="stat-label">Total versements</span>
@@ -333,10 +333,10 @@ function formatMode(mode) {
   display: flex;
   align-items: center;
   gap: 0;
-  background: white;
+  background: var(--surface-1);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-gray-200);
+  border: 1px solid var(--border);
   margin-bottom: 1.25rem;
   overflow: hidden;
 }
@@ -371,8 +371,9 @@ function formatMode(mode) {
 }
 .search-input {
   width: 100%; padding: 0.55rem 2.5rem 0.55rem 2.3rem;
-  border: 1px solid var(--color-gray-300); border-radius: var(--border-radius);
-  font-size: 0.9rem; background: white; transition: border-color 0.15s, box-shadow 0.15s;
+  border: 1px solid var(--border); border-radius: var(--border-radius);
+  font-size: 0.9rem; background: var(--surface-1); color: var(--text-primary);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .search-input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .search-clear {
@@ -410,7 +411,8 @@ function formatMode(mode) {
   animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white; border-radius: var(--border-radius-xl);
+  background: var(--surface-2); border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius-xl);
   width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
   box-shadow: var(--shadow-xl);
   animation: slideUp 0.2s ease;
@@ -419,8 +421,8 @@ function formatMode(mode) {
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 1.1rem 1.5rem;
-  background: var(--color-gray-50);
-  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--border);
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
 .modal-header h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0; color: var(--color-gray-900); }

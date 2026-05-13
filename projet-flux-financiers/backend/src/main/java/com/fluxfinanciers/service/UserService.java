@@ -103,6 +103,14 @@ public class UserService {
     @Transactional
     public void delete(Long id) {
         User existing = findById(id);
+        if (existing.getRole() == Role.ADMIN) {
+            long nbAdmins = userRepository.findAll().stream()
+                    .filter(u -> u.getRole() == Role.ADMIN && u.isActif())
+                    .count();
+            if (nbAdmins <= 1) {
+                throw new IllegalStateException("Impossible de supprimer le dernier compte ADMIN");
+            }
+        }
         userRepository.delete(existing);
     }
 }

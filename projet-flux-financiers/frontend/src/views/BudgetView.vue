@@ -702,7 +702,7 @@ function fmt(m) {
   transition: all 0.15s;
 }
 .tab-btn:hover { color: var(--color-gray-900); }
-.tab-active { background: white; color: var(--color-primary); box-shadow: var(--shadow-sm); font-weight: 600; }
+.tab-active { background: var(--surface-2); color: var(--color-primary); box-shadow: var(--shadow-sm); font-weight: 600; }
 
 /* ── Sélecteur période ── */
 .period-selector {
@@ -718,8 +718,8 @@ function fmt(m) {
   gap: 1rem;
 }
 .budget-card {
-  background: white; border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-sm);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
   padding: 1.25rem; transition: box-shadow 0.2s;
 }
 .budget-card:hover { box-shadow: var(--shadow-md); }
@@ -771,8 +771,8 @@ function fmt(m) {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;
 }
 .seuil-card {
-  background: white; border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-sm);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
   padding: 1.25rem;
 }
 .seuil-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
@@ -782,9 +782,9 @@ function fmt(m) {
   font-size: 0.78rem; font-weight: 600; padding: 0.25rem 0.6rem;
   border-radius: 20px;
 }
-.seuil-badge.ok   { background: var(--color-success-light); color: #065f46; }
-.seuil-badge.warn { background: #fff7ed; color: #92400e; }
-.seuil-badge.over { background: var(--color-danger-light); color: #991b1b; }
+.seuil-badge.ok   { background: var(--color-success-light); color: var(--color-success); }
+.seuil-badge.warn { background: var(--color-warning-light); color: var(--color-warning); }
+.seuil-badge.over { background: var(--color-danger-light);  color: var(--color-danger); }
 .seuil-empty { text-align: center; padding: 1rem 0; }
 
 /* ── Section actions ── */
@@ -807,7 +807,8 @@ function fmt(m) {
   z-index: 2000; padding: 1rem; animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white; border-radius: var(--border-radius-xl);
+  background: var(--surface-2); border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius-xl);
   width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
   box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
 }

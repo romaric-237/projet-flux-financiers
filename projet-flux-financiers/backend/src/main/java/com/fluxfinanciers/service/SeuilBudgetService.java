@@ -33,6 +33,9 @@ public class SeuilBudgetService {
 
     @Transactional
     public SeuilBudget create(SeuilBudgetRequest request) {
+        if (seuilBudgetRepository.findByCategorie(request.getCategorie()).isPresent()) {
+            throw new IllegalStateException("Un seuil existe déjà pour la catégorie " + request.getCategorie());
+        }
         User createdBy = userRepository.findById(request.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedById()));
         SeuilBudget seuil = new SeuilBudget();
@@ -48,6 +51,9 @@ public class SeuilBudgetService {
     @Transactional
     public SeuilBudget update(Long id, SeuilBudgetRequest request) {
         SeuilBudget existing = findById(id);
+        seuilBudgetRepository.findByCategorie(request.getCategorie())
+                .filter(s -> !s.getId().equals(id))
+                .ifPresent(s -> { throw new IllegalStateException("Un seuil existe déjà pour la catégorie " + request.getCategorie()); });
         existing.setCategorie(request.getCategorie());
         existing.setPlafond(request.getPlafond());
         SeuilBudget saved = seuilBudgetRepository.save(existing);

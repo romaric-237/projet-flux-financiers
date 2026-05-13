@@ -398,7 +398,8 @@ function formatMode(mode) {
 /* ── Stats bar ── */
 .stats-bar {
   display: flex; align-items: center; gap: 2rem;
-  background: white; border-radius: 12px; padding: 1rem 1.5rem;
+  background: var(--surface-1); border-radius: 12px; padding: 1rem 1.5rem;
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; flex-wrap: wrap;
 }
 .stat-item    { display: flex; flex-direction: column; }
@@ -423,7 +424,7 @@ function formatMode(mode) {
   transition: all 0.15s; font-weight: 500;
 }
 .tab-btn:hover   { color: var(--color-gray-900); }
-.tab-active      { background: white; color: var(--color-primary); box-shadow: var(--shadow-sm); }
+.tab-active      { background: var(--surface-2); color: var(--color-primary); box-shadow: var(--shadow-sm); }
 .tab-icon        { font-size: 1rem; }
 .tab-count {
   background: var(--color-gray-200); color: var(--color-gray-600);
@@ -442,8 +443,9 @@ function formatMode(mode) {
 }
 .search-input {
   width: 100%; padding: 0.5rem 2rem 0.5rem 2.25rem;
-  border: 1px solid var(--color-gray-300); border-radius: 8px;
-  font-size: 0.9rem; background: white; transition: border-color 0.2s;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.9rem; background: var(--surface-1); color: var(--text-primary);
+  transition: border-color 0.2s;
 }
 .search-input:focus { outline: none; border-color: var(--color-primary); }
 .search-clear {
@@ -452,8 +454,8 @@ function formatMode(mode) {
 }
 .filter-group  { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .filter-select, .filter-date, .filter-input-num {
-  padding: 0.45rem 0.75rem; border: 1px solid var(--color-gray-300);
-  border-radius: 8px; font-size: 0.875rem; background: white; color: var(--color-gray-700); cursor: pointer;
+  padding: 0.45rem 0.75rem; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 0.875rem; background: var(--surface-1); color: var(--text-primary); cursor: pointer;
 }
 .filter-input-num { width: 130px; }
 .filter-select:focus, .filter-date:focus, .filter-input-num:focus { outline: none; border-color: var(--color-primary); }
@@ -479,8 +481,8 @@ function formatMode(mode) {
   padding: 0.7rem 1rem; font-size: 0.95rem;
   border-bottom: 1px solid var(--color-gray-200);
 }
-.solde-pos { background: #f0faf4; color: var(--color-success); }
-.solde-neg { background: #fef2f2; color: var(--color-danger); }
+.solde-pos { background: var(--color-success-light); color: var(--color-success); border-bottom: 1px solid rgba(74,222,128,0.2); }
+.solde-neg { background: var(--color-danger-light);  color: var(--color-danger);  border-bottom: 1px solid rgba(248,113,113,0.2); }
 
 /* ── Table ── */
 .table-card { padding: 0; overflow: hidden; }

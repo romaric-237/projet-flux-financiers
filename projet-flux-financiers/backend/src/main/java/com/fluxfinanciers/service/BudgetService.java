@@ -42,6 +42,9 @@ public class BudgetService {
 
     @Transactional
     public Budget create(BudgetRequest request) {
+        if (budgetRepository.findByCategorieAndMoisAndAnnee(request.getCategorie(), request.getMois(), request.getAnnee()).isPresent()) {
+            throw new IllegalStateException("Un budget existe déjà pour " + request.getCategorie() + " en " + request.getMois() + "/" + request.getAnnee());
+        }
         User createdBy = userRepository.findById(request.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedById()));
         Budget budget = new Budget();
@@ -59,6 +62,9 @@ public class BudgetService {
     @Transactional
     public Budget update(Long id, BudgetRequest request) {
         Budget existing = findById(id);
+        budgetRepository.findByCategorieAndMoisAndAnnee(request.getCategorie(), request.getMois(), request.getAnnee())
+                .filter(b -> !b.getId().equals(id))
+                .ifPresent(b -> { throw new IllegalStateException("Un budget existe déjà pour " + request.getCategorie() + " en " + request.getMois() + "/" + request.getAnnee()); });
         existing.setCategorie(request.getCategorie());
         existing.setMois(request.getMois());
         existing.setAnnee(request.getAnnee());

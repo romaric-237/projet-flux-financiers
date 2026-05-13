@@ -34,7 +34,7 @@
             <td>{{ p.remarque || '-' }}</td>
             <td class="d-flex gap-1">
               <button class="btn btn-secondary btn-sm" @click="openForm(p)">Modifier</button>
-              <button class="btn btn-danger btn-sm" @click="remove(p.id)">Supprimer</button>
+              <button v-if="authStore.isAdmin" class="btn btn-danger btn-sm" @click="remove(p.id)">Supprimer</button>
             </td>
           </tr>
         </tbody>
@@ -105,9 +105,11 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/auth'
 
 const toast = useToast()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const paiements = ref([])
 const employes = ref([])
@@ -241,14 +243,15 @@ function formatMode(mode) {
   z-index: 2000; padding: 1rem; animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white; border-radius: var(--border-radius-xl);
+  background: var(--surface-2); border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius-xl);
   width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
   box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
 }
 .modal-card h3 {
-  font-size: 1rem; font-weight: 600; margin: 0;
+  font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-primary);
   padding: 1.1rem 1.5rem;
-  background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200);
+  background: var(--surface-3); border-bottom: 1px solid var(--border);
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
 form { padding: 1.5rem; }

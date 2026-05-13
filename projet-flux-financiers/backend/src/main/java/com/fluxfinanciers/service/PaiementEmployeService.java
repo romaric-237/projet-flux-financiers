@@ -53,6 +53,9 @@ public class PaiementEmployeService {
         if (!existing.getEmploye().getId().equals(request.getEmployeId())) {
             Employe employe = employeRepository.findById(request.getEmployeId())
                     .orElseThrow(() -> new ResourceNotFoundException("Employe", request.getEmployeId()));
+            if (employe.getStatut() != StatutEmploye.ACTIF) {
+                throw new IllegalStateException("Impossible d'assigner un paiement à un employé INACTIF");
+            }
             existing.setEmploye(employe);
         }
         existing.setType(request.getType());

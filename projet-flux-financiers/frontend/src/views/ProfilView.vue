@@ -269,7 +269,7 @@ function avatarColor(nom) {
   width: 64px; height: 64px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: white; font-size: 1.4rem; font-weight: 700; flex-shrink: 0;
-  box-shadow: 0 0 0 3px white, 0 0 0 5px rgba(0,0,0,0.08);
+  box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px var(--border);
 }
 .profil-name { font-size: 1.05rem; font-weight: 700; color: var(--color-gray-900); margin-bottom: 0.3rem; }
 
@@ -320,8 +320,8 @@ function avatarColor(nom) {
 /* Alerte succès */
 .alert-success {
   padding: 1.25rem; background: var(--color-success-light);
-  border: 1px solid #a7f3d0; border-radius: var(--border-radius);
-  color: #065f46; font-weight: 500; text-align: center;
+  border: 1px solid rgba(74, 222, 128, 0.2); border-radius: var(--border-radius);
+  color: var(--color-success); font-weight: 500; text-align: center;
   font-size: 0.95rem; line-height: 1.6;
 }
 

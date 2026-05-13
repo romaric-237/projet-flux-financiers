@@ -180,8 +180,8 @@ function triggerDownload(blob, filename) {
 
 /* ── Filtres ── */
 .filters-card {
-  background: white; border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-sm);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
   padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
 }
 .filters-title {
@@ -197,8 +197,8 @@ function triggerDownload(blob, filename) {
 
 /* ── Export complet ── */
 .export-complet-card {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 2px solid #86efac;
+  background: var(--color-success-light);
+  border: 1px solid rgba(74, 222, 128, 0.25);
   border-radius: var(--border-radius-lg);
   padding: 1.5rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
@@ -208,23 +208,23 @@ function triggerDownload(blob, filename) {
 .export-complet-left { display: flex; align-items: center; gap: 1.25rem; }
 .export-icon-lg {
   width: 64px; height: 64px; border-radius: 16px;
-  background: #dcfce7; color: #16a34a;
+  background: rgba(74, 222, 128, 0.15); color: var(--color-success);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.8rem; flex-shrink: 0;
-  border: 2px solid #86efac;
+  border: 1px solid rgba(74, 222, 128, 0.25);
 }
-.export-complet-title { font-size: 1.1rem; font-weight: 700; color: #15803d; margin-bottom: 0.2rem; }
-.export-complet-desc  { font-size: 0.82rem; color: #166534; margin-bottom: 0.6rem; }
+.export-complet-title { font-size: 1.1rem; font-weight: 700; color: var(--color-success); margin-bottom: 0.2rem; }
+.export-complet-desc  { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.6rem; }
 
 .export-sheets { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .sheet-badge {
   font-size: 0.72rem; padding: 0.2rem 0.6rem;
   border-radius: 99px; font-weight: 600;
 }
-.sheet-green  { background: #dcfce7; color: #15803d; }
-.sheet-blue   { background: #dbeafe; color: #1d4ed8; }
-.sheet-red    { background: #fee2e2; color: #b91c1c; }
-.sheet-purple { background: #ede9fe; color: #7c3aed; }
+.sheet-green  { background: var(--color-success-light); color: var(--color-success); }
+.sheet-blue   { background: var(--color-info-light);    color: var(--color-info); }
+.sheet-red    { background: var(--color-danger-light);  color: var(--color-danger); }
+.sheet-purple { background: var(--color-violet-light);  color: var(--color-violet); }
 
 .btn-export-complet {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -251,8 +251,8 @@ function triggerDownload(blob, filename) {
 .export-grid { display: flex; flex-direction: column; gap: 1rem; }
 
 .export-card {
-  background: white; border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-sm);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
   padding: 1.25rem 1.5rem;
   display: flex; align-items: center; gap: 1.25rem;
   transition: box-shadow 0.2s, transform 0.15s;

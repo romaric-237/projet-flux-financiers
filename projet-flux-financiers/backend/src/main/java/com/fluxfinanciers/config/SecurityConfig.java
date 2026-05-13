@@ -81,6 +81,10 @@ public class SecurityConfig {
                 // Changement de mot de passe et profil — tous les authentifiés
                 .requestMatchers("/api/users/changer-mot-de-passe").authenticated()
                 .requestMatchers("/api/users/me").authenticated()
+                // Suppression des paiements — ADMIN uniquement
+                .requestMatchers(HttpMethod.DELETE, "/api/versements/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/paiement-charges/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/paiement-employes/**").hasRole("ADMIN")
                 // Budgets, charges récurrentes, seuils — ADMIN uniquement pour création/modification/suppression
                 .requestMatchers(HttpMethod.POST, "/api/budgets", "/api/seuils-budget", "/api/charges-recurrentes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/budgets/**", "/api/seuils-budget/**", "/api/charges-recurrentes/**").hasRole("ADMIN")

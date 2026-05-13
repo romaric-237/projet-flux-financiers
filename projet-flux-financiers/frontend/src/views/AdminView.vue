@@ -355,8 +355,8 @@ function avatarColor(nom) {
 /* ── Stats bar ── */
 .stats-bar {
   display: flex; align-items: center;
-  background: white; border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm); border: 1px solid var(--color-gray-200);
+  background: var(--surface-1); border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
   margin-bottom: 1.25rem; overflow: hidden;
 }
 .stat-item {
@@ -387,8 +387,9 @@ function avatarColor(nom) {
 }
 .search-input {
   width: 100%; padding: 0.55rem 2.5rem 0.55rem 2.3rem;
-  border: 1px solid var(--color-gray-300); border-radius: var(--border-radius);
-  font-size: 0.9rem; background: white; transition: border-color 0.15s;
+  border: 1px solid var(--border); border-radius: var(--border-radius);
+  font-size: 0.9rem; background: var(--surface-1); color: var(--text-primary);
+  transition: border-color 0.15s;
 }
 .search-input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .search-clear {
@@ -410,7 +411,7 @@ function avatarColor(nom) {
   width: 38px; height: 38px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: white; font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
-  box-shadow: 0 0 0 2px white, 0 0 0 3px rgba(0,0,0,0.08);
+  box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px var(--border);
 }
 .user-name { font-weight: 600; color: var(--color-gray-800); font-size: 0.9rem; }
 .user-sub  { font-size: 0.75rem; color: var(--color-gray-400); margin-top: 0.1rem; }
@@ -432,8 +433,8 @@ function avatarColor(nom) {
   display: inline-block; padding: 0.2rem 0.65rem; border-radius: 20px;
   font-size: 0.75rem; font-weight: 600;
 }
-.status-actif   { background: var(--color-success-light); color: #065f46; }
-.status-inactif { background: var(--color-gray-100); color: var(--color-gray-500); }
+.status-actif   { background: var(--color-success-light); color: var(--color-success); }
+.status-inactif { background: rgba(255,255,255,0.05); color: var(--text-tertiary); }
 
 /* ── Modal ── */
 .modal-overlay {
@@ -444,7 +445,8 @@ function avatarColor(nom) {
   animation: fadeIn 0.15s ease;
 }
 .modal-card {
-  background: white; border-radius: var(--border-radius-xl);
+  background: var(--surface-2); border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius-xl);
   width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
   box-shadow: var(--shadow-xl); animation: slideUp 0.2s ease;
 }
@@ -474,8 +476,8 @@ function avatarColor(nom) {
 }
 
 .alert-info {
-  padding: 0.75rem 1rem; background: #eff6ff; border: 1px solid #bfdbfe;
-  border-radius: var(--border-radius); font-size: 0.82rem; color: #1e40af;
+  padding: 0.75rem 1rem; background: var(--color-info-light); border: 1px solid rgba(96,165,250,0.2);
+  border-radius: var(--border-radius); font-size: 0.82rem; color: var(--color-info);
   margin-bottom: 0.75rem;
 }
 
